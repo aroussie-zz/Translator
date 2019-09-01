@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:translator/translator.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,13 +12,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
+  final translator = new GoogleTranslator();
 
   @override
   void initState() {
     super.initState();
-    _inputController.addListener(() {
-      //TODO: Use the Translation package
-      _outputController.text = _inputController.text;
+    _inputController.addListener(() async {
+      String input = _inputController.text;
+      _outputController.text = input.isEmpty
+          ? ""
+          : await translator.translate(_inputController.text,
+              from: 'fr', to: 'en');
     });
   }
 
@@ -157,6 +162,4 @@ class _HomePageState extends State<HomePage> {
     _inputController.dispose();
     _outputController.dispose();
   }
-
-
 }

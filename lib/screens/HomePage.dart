@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:myTranslator/models/Language.dart';
 import 'package:translator/translator.dart';
+
+import 'PickLanguagePage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
   final translator = new GoogleTranslator();
+  List<Language> _languages = [];
 
   @override
   void initState() {
@@ -24,6 +30,7 @@ class _HomePageState extends State<HomePage> {
           : await translator.translate(_inputController.text,
               from: 'fr', to: 'en');
     });
+    _fetchLocalLanguages();
   }
 
   @override
@@ -50,6 +57,14 @@ class _HomePageState extends State<HomePage> {
         Expanded(
             child: FlatButton(
           child: Text("French"),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PickLanguagePage(
+                          languages: _languages,
+                        )));
+          },
         )),
         IconButton(
           icon: Icon(Icons.compare_arrows),
@@ -161,5 +176,23 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
     _inputController.dispose();
     _outputController.dispose();
+  }
+
+  void _fetchLocalLanguages() async {
+    String localJsonString = await DefaultAssetBundle.of(context)
+        .loadString('assets/languages.json');
+
+    if (localJsonString == null) {
+      return;
+    }
+
+    final parsedJson = json.decode(localJsonString.toString());
+    if (parsedJson != null) {
+      for (final key in parsedJson.keys) {
+        _languages.add(Language(isoCode: key, name: parsedJson[key]));
+      }
+    }
+    _languages
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 }

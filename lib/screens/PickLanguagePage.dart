@@ -3,8 +3,11 @@ import 'package:myTranslator/models/Language.dart';
 
 class PickLanguagePage extends StatefulWidget {
   final List<Language> languages;
+  final bool selectOriginalLanguage;
 
-  PickLanguagePage({Key key, this.languages}) : super(key: key);
+  PickLanguagePage(
+      {Key key, this.languages, this.selectOriginalLanguage = true})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -17,13 +20,20 @@ class _PickLanguageState extends State<PickLanguagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Select Original Language"),
+        leading: BackButtonIcon(),
+        title: Text(widget.selectOriginalLanguage
+            ? "Select Original Language"
+            : "Select what to translate to"),
       ),
       body: SafeArea(
           child: ListView.builder(
               itemCount: widget.languages == null ? 0 : widget.languages.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(title: Text(widget.languages[index].name));
+                return ListTile(
+                    title: Text(widget.languages[index].name),
+                    onTap: () {
+                      Navigator.pop(context, widget.languages[index]);
+                    });
               },
               padding: EdgeInsets.all(8))),
     );

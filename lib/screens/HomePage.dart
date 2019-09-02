@@ -19,6 +19,8 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _outputController = TextEditingController();
   final translator = new GoogleTranslator();
   List<Language> _languages = [];
+  Language _originalLanguage;
+  Language _languageToTranslateTo;
 
   @override
   void initState() {
@@ -28,7 +30,7 @@ class _HomePageState extends State<HomePage> {
       _outputController.text = input.isEmpty
           ? ""
           : await translator.translate(_inputController.text,
-              from: 'fr', to: 'en');
+              from: _originalLanguage.isoCode, to: _languageToTranslateTo.isoCode);
     });
     _fetchLocalLanguages();
   }
@@ -56,23 +58,23 @@ class _HomePageState extends State<HomePage> {
       children: <Widget>[
         Expanded(
             child: FlatButton(
-          child: Text("French"),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PickLanguagePage(
-                          languages: _languages,
-                        )));
-          },
-        )),
+                child: Text(_originalLanguage != null
+                    ? _originalLanguage.name
+                    : "Select Language"),
+                onPressed: () {
+                  _sendToSelectLanguage(true);
+                })),
         IconButton(
           icon: Icon(Icons.compare_arrows),
         ),
         Expanded(
             child: FlatButton(
-          child: Text("English"),
-        )),
+                child: Text(_languageToTranslateTo != null
+                    ? _languageToTranslateTo.name
+                    : "Select Language"),
+                onPressed: () {
+                  _sendToSelectLanguage(false);
+                })),
       ],
     );
   }
@@ -194,5 +196,23 @@ class _HomePageState extends State<HomePage> {
     }
     _languages
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  }
+
+  _sendToSelectLanguage(bool isOriginalLanguage) async {
+    Language selectedLanguage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PickLanguagePage(
+                  languages: _languages,
+                  selectOriginalLanguage: isOriginalLanguage,
+                )));
+
+    setState(() {
+      if (isOriginalLanguage) {
+        _originalLanguage = selectedLanguage;
+      } else {
+        _languageToTranslateTo = selectedLanguage;
+      }
+    });
   }
 }

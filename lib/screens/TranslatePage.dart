@@ -41,7 +41,12 @@ class _TranslatePageState extends State<TranslatePage> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: Text("My Translator"),
+              leading: IconButton(
+                  icon: Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              title: Text("Translate"),
             ),
             body: Column(
               mainAxisSize: MainAxisSize.min,

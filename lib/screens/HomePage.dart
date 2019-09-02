@@ -30,7 +30,8 @@ class _HomePageState extends State<HomePage> {
       _outputController.text = input.isEmpty
           ? ""
           : await translator.translate(_inputController.text,
-              from: _originalLanguage.isoCode, to: _languageToTranslateTo.isoCode);
+              from: _originalLanguage.isoCode,
+              to: _languageToTranslateTo.isoCode);
     });
     _fetchLocalLanguages();
   }
@@ -66,6 +67,9 @@ class _HomePageState extends State<HomePage> {
                 })),
         IconButton(
           icon: Icon(Icons.compare_arrows),
+          onPressed: () {
+            _switchLanguages();
+          },
         ),
         Expanded(
             child: FlatButton(
@@ -214,5 +218,19 @@ class _HomePageState extends State<HomePage> {
         _languageToTranslateTo = selectedLanguage;
       }
     });
+  }
+
+  _switchLanguages() async {
+    Language tmp = _originalLanguage;
+
+    setState(() {
+      _originalLanguage = _languageToTranslateTo;
+      _languageToTranslateTo = tmp;
+    });
+
+    if (_inputController.text.isNotEmpty) {
+      _outputController.text = await translator.translate(_inputController.text,
+          from: _originalLanguage.isoCode, to: tmp.isoCode);
+    }
   }
 }

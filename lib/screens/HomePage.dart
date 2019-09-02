@@ -211,6 +211,8 @@ class _HomePageState extends State<HomePage> {
                   selectOriginalLanguage: isOriginalLanguage,
                 )));
 
+    if (selectedLanguage == null) return;
+
     setState(() {
       if (isOriginalLanguage) {
         _originalLanguage = selectedLanguage;

@@ -7,14 +7,14 @@ import 'package:translator/translator.dart';
 
 import 'PickLanguagePage.dart';
 
-class HomePage extends StatefulWidget {
+class TranslatePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _HomePageState();
+    return _TranslatePageState();
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _TranslatePageState extends State<TranslatePage> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
   final translator = new GoogleTranslator();

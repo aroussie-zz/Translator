@@ -20,7 +20,9 @@ class _PickLanguageState extends State<PickLanguagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButtonIcon(),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context)),
         title: Text(widget.selectOriginalLanguage
             ? "Select Original Language"
             : "Select what to translate to"),

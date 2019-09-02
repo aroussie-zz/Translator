@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:myTranslator/models/Language.dart';
+import 'package:translator/translator.dart';
+
+import 'PickLanguagePage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,14 +17,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
+  final translator = new GoogleTranslator();
+  List<Language> _languages = [];
+  Language _originalLanguage;
+  Language _languageToTranslateTo;
 
   @override
   void initState() {
     super.initState();
-    _inputController.addListener(() {
-      //TODO: Use the Translation package
-      _outputController.text = _inputController.text;
+    _inputController.addListener(() async {
+      String input = _inputController.text;
+      _outputController.text = input.isEmpty
+          ? ""
+          : await translator.translate(_inputController.text,
+              from: _originalLanguage.isoCode, to: _languageToTranslateTo.isoCode);
     });
+    _fetchLocalLanguages();
   }
 
   @override
@@ -44,15 +58,23 @@ class _HomePageState extends State<HomePage> {
       children: <Widget>[
         Expanded(
             child: FlatButton(
-          child: Text("French"),
-        )),
+                child: Text(_originalLanguage != null
+                    ? _originalLanguage.name
+                    : "Select Language"),
+                onPressed: () {
+                  _sendToSelectLanguage(true);
+                })),
         IconButton(
           icon: Icon(Icons.compare_arrows),
         ),
         Expanded(
             child: FlatButton(
-          child: Text("English"),
-        )),
+                child: Text(_languageToTranslateTo != null
+                    ? _languageToTranslateTo.name
+                    : "Select Language"),
+                onPressed: () {
+                  _sendToSelectLanguage(false);
+                })),
       ],
     );
   }
@@ -158,5 +180,39 @@ class _HomePageState extends State<HomePage> {
     _outputController.dispose();
   }
 
+  void _fetchLocalLanguages() async {
+    String localJsonString = await DefaultAssetBundle.of(context)
+        .loadString('assets/languages.json');
 
+    if (localJsonString == null) {
+      return;
+    }
+
+    final parsedJson = json.decode(localJsonString.toString());
+    if (parsedJson != null) {
+      for (final key in parsedJson.keys) {
+        _languages.add(Language(isoCode: key, name: parsedJson[key]));
+      }
+    }
+    _languages
+        .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+  }
+
+  _sendToSelectLanguage(bool isOriginalLanguage) async {
+    Language selectedLanguage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PickLanguagePage(
+                  languages: _languages,
+                  selectOriginalLanguage: isOriginalLanguage,
+                )));
+
+    setState(() {
+      if (isOriginalLanguage) {
+        _originalLanguage = selectedLanguage;
+      } else {
+        _languageToTranslateTo = selectedLanguage;
+      }
+    });
+  }
 }

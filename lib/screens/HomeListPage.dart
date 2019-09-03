@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'TranslatePage.dart';
 
@@ -33,17 +35,38 @@ class _HomeListState extends State<HomeListPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("My Translations"),
       ),
       body: SafeArea(
-          child: AnimatedList(
-              key: _listKey,
-              initialItemCount: _translations.length,
-              itemBuilder: (context, index, animation) {
-                return _buildListTile(_translations[index], animation);
+          child: FutureBuilder(
+              future: _fetchTranslations(),
+              builder: (context, snapshot) {
+                _translations = snapshot.data;
+                return _translations == null
+                    ? CircularProgressIndicator()
+                    : _translations.isNotEmpty
+                        ? AnimatedList(
+                            key: _listKey,
+                            initialItemCount: _translations.length,
+                            itemBuilder: (context, index, animation) {
+                              return _buildListTile(
+                                  _translations[index], animation);
+                            })
+                        : Center(
+                            child: Text(
+                                "You don't have any saved translations."
+                                    " Start translating sentences by pressing + at the bottom of the screen!",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 2)
+                          );
               })),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -77,5 +100,31 @@ class _HomeListState extends State<HomeListPage> {
     };
 
     _listKey.currentState.removeItem(indexToDelete, builder);
+  }
+
+  ///Open or create a Database and fetch the exising translations
+  Future<List<Translation>> _fetchTranslations() async {
+    var database = await openDatabase(
+        join(await getDatabasesPath(), "my_translation_database.db"),
+        onCreate: (db, version) {
+      //Create the Translation table when created
+      return db.execute("CREATE TABLE translation("
+          "id INTEGER PRIMARY KEY,"
+          "originalSentence TEXT,"
+          "translatedSentence TEXT,"
+          "type TEXT)");
+    }, version: 1);
+
+    final List<Map<String, dynamic>> maps = await database.query("translation");
+
+    //TODO: Refactor the logic to sort the translations
+    return List.generate(maps.length, (index) {
+      return Translation(
+        id: maps[index]['id'],
+        originalSentence: maps[index]['originalSentence'],
+        translatedSentence: maps[index]['translatedSentence'],
+        type: maps[index]['type'],
+      );
+    });
   }
 }

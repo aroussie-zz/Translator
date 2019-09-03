@@ -1,18 +1,22 @@
 class Translation {
 
+  int id;
   String originalSentence;
   String translatedSentence;
   String originalLanguage;
   String translationLanguage;
+  String type;
 
-  Translation({this.originalSentence, this.translatedSentence,
-      this.originalLanguage, this.translationLanguage});
+  Translation({this.id, this.originalSentence, this.translatedSentence,
+      this.originalLanguage, this.translationLanguage, this.type});
 
   Translation.dummy(int randomNumber){
+    this.id = randomNumber;
     this.originalSentence = "Je suis l'originale $randomNumber";
     this.translatedSentence = "I'm the original";
     this.originalLanguage = "French";
     this.translationLanguage = "English";
+    this.type = "French -> English";
   }
 
 

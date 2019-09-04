@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Language.dart';
+import 'package:myTranslator/models/Translation.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:translator/translator.dart';
 
 import 'PickLanguagePage.dart';
@@ -38,6 +42,7 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -51,14 +56,14 @@ class _TranslatePageState extends State<TranslatePage> {
             body: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                _buildTopBar(),
+                _buildTopBar(context),
                 _buildTranslationCard(),
                 _buildButtons()
               ],
             )));
   }
 
-  Widget _buildTopBar() {
+  Widget _buildTopBar(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -68,7 +73,7 @@ class _TranslatePageState extends State<TranslatePage> {
                     ? _originalLanguage.name
                     : "Select Language"),
                 onPressed: () {
-                  _sendToSelectLanguage(true);
+                  _sendToSelectLanguage(context, true);
                 })),
         IconButton(
           icon: Icon(Icons.compare_arrows),
@@ -82,7 +87,7 @@ class _TranslatePageState extends State<TranslatePage> {
                     ? _languageToTranslateTo.name
                     : "Select Language"),
                 onPressed: () {
-                  _sendToSelectLanguage(false);
+                  _sendToSelectLanguage(context, false);
                 })),
       ],
     );
@@ -169,7 +174,7 @@ class _TranslatePageState extends State<TranslatePage> {
         RaisedButton(
             color: Colors.green,
             onPressed: () {
-              print("SAVE!");
+              _saveTranslationInDB();
             },
             child: Row(children: <Widget>[
               Icon(Icons.save),
@@ -190,7 +195,7 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   void _fetchLocalLanguages() async {
-    String localJsonString = await DefaultAssetBundle.of(context)
+    String localJsonString = await rootBundle
         .loadString('assets/languages.json');
 
     if (localJsonString == null) {
@@ -207,7 +212,7 @@ class _TranslatePageState extends State<TranslatePage> {
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 
-  _sendToSelectLanguage(bool isOriginalLanguage) async {
+  _sendToSelectLanguage(BuildContext context, bool isOriginalLanguage) async {
     Language selectedLanguage = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -239,5 +244,20 @@ class _TranslatePageState extends State<TranslatePage> {
       _outputController.text = await translator.translate(_inputController.text,
           from: _originalLanguage.isoCode, to: tmp.isoCode);
     }
+  }
+
+  void _saveTranslationInDB() async {
+    var database = await openDatabase(
+        join(await getDatabasesPath(), "my_translation_database.db"));
+    
+    var translation = new Translation.forDatabase(
+      originalSentence: _inputController.text,
+      translatedSentence: _outputController.text,
+      type: "${_originalLanguage.name} -> ${_languageToTranslateTo.name}"
+    );
+
+    await database.insert("translation", translation.toMap()).then( (_) {
+      _inputController.text = "";
+    });
   }
 }

@@ -1,5 +1,4 @@
 class Translation {
-
   int id;
   String originalSentence;
   String translatedSentence;
@@ -7,10 +6,20 @@ class Translation {
   String translationLanguage;
   String type;
 
-  Translation({this.id, this.originalSentence, this.translatedSentence,
-      this.originalLanguage, this.translationLanguage, this.type});
+  Translation(
+      {this.id,
+      this.originalSentence,
+      this.translatedSentence,
+      this.originalLanguage,
+      this.translationLanguage,
+      this.type});
 
-  Translation.dummy(int randomNumber){
+  Translation.forDatabase(
+      {this.originalSentence,
+      this.translatedSentence,
+      this.type});
+
+  Translation.dummy(int randomNumber) {
     this.id = randomNumber;
     this.originalSentence = "Je suis l'originale $randomNumber";
     this.translatedSentence = "I'm the original";
@@ -19,5 +28,12 @@ class Translation {
     this.type = "French -> English";
   }
 
-
+  Map<String, dynamic> toMap() {
+    return {
+      'id': null,
+      'originalSentence': originalSentence,
+      'translatedSentence': translatedSentence,
+      'type': type
+    };
+  }
 }

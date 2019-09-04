@@ -15,29 +15,7 @@ class HomeListPage extends StatefulWidget {
 class _HomeListState extends State<HomeListPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
-  //IMPLEMENT SQLITE INSTEAD
-  List<Translation> _translations = [
-    Translation.dummy(1),
-    Translation.dummy(2),
-    Translation.dummy(3),
-    Translation.dummy(4),
-    Translation.dummy(5),
-    Translation.dummy(6),
-    Translation.dummy(7),
-    Translation.dummy(8),
-    Translation.dummy(9),
-    Translation.dummy(10),
-    Translation.dummy(11),
-    Translation.dummy(12),
-    Translation.dummy(13),
-    Translation.dummy(14),
-    Translation.dummy(15)
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  List<Translation> _translations = [];
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +70,7 @@ class _HomeListState extends State<HomeListPage> {
   }
 
   ///Delete an item with a nice animation
-  void _deleteListItem(Translation itemToDelete) {
+  void _deleteListItem(Translation itemToDelete) async{
     int indexToDelete = _translations.indexOf(itemToDelete);
     _translations.remove(itemToDelete);
     AnimatedListRemovedItemBuilder builder = (context, animation) {
@@ -100,6 +78,10 @@ class _HomeListState extends State<HomeListPage> {
     };
 
     _listKey.currentState.removeItem(indexToDelete, builder);
+
+    var database = await openDatabase(
+        join(await getDatabasesPath(), "my_translation_database.db"));
+    database.delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
   }
 
   ///Open or create a Database and fetch the exising translations

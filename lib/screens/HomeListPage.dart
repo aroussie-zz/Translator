@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'TranslatePage.dart';
 
@@ -13,24 +15,7 @@ class HomeListPage extends StatefulWidget {
 class _HomeListState extends State<HomeListPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
-  //IMPLEMENT SQLITE INSTEAD
-  List<Translation> _translations = [
-    Translation.dummy(1),
-    Translation.dummy(2),
-    Translation.dummy(3),
-    Translation.dummy(4),
-    Translation.dummy(5),
-    Translation.dummy(6),
-    Translation.dummy(7),
-    Translation.dummy(8),
-    Translation.dummy(9),
-    Translation.dummy(10),
-    Translation.dummy(11),
-    Translation.dummy(12),
-    Translation.dummy(13),
-    Translation.dummy(14),
-    Translation.dummy(15)
-  ];
+  List<Translation> _translations = [];
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +24,27 @@ class _HomeListState extends State<HomeListPage> {
         title: Text("My Translations"),
       ),
       body: SafeArea(
-          child: AnimatedList(
-              key: _listKey,
-              initialItemCount: _translations.length,
-              itemBuilder: (context, index, animation) {
-                return _buildListTile(_translations[index], animation);
+          child: FutureBuilder(
+              future: _fetchTranslations(),
+              builder: (context, snapshot) {
+                _translations = snapshot.data;
+                return _translations == null
+                    ? CircularProgressIndicator()
+                    : _translations.isNotEmpty
+                        ? AnimatedList(
+                            key: _listKey,
+                            initialItemCount: _translations.length,
+                            itemBuilder: (context, index, animation) {
+                              return _buildListTile(
+                                  _translations[index], animation);
+                            })
+                        : Center(
+                            child: Text(
+                                "You don't have any saved translations."
+                                    " Start translating sentences by pressing + at the bottom of the screen!",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 2)
+                          );
               })),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -69,7 +70,7 @@ class _HomeListState extends State<HomeListPage> {
   }
 
   ///Delete an item with a nice animation
-  void _deleteListItem(Translation itemToDelete) {
+  void _deleteListItem(Translation itemToDelete) async{
     int indexToDelete = _translations.indexOf(itemToDelete);
     _translations.remove(itemToDelete);
     AnimatedListRemovedItemBuilder builder = (context, animation) {
@@ -77,5 +78,35 @@ class _HomeListState extends State<HomeListPage> {
     };
 
     _listKey.currentState.removeItem(indexToDelete, builder);
+
+    var database = await openDatabase(
+        join(await getDatabasesPath(), "my_translation_database.db"));
+    database.delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
+  }
+
+  ///Open or create a Database and fetch the exising translations
+  Future<List<Translation>> _fetchTranslations() async {
+    var database = await openDatabase(
+        join(await getDatabasesPath(), "my_translation_database.db"),
+        onCreate: (db, version) {
+      //Create the Translation table when created
+      return db.execute("CREATE TABLE translation("
+          "id INTEGER PRIMARY KEY,"
+          "originalSentence TEXT,"
+          "translatedSentence TEXT,"
+          "type TEXT)");
+    }, version: 1);
+
+    final List<Map<String, dynamic>> maps = await database.query("translation");
+
+    //TODO: Refactor the logic to sort the translations
+    return List.generate(maps.length, (index) {
+      return Translation(
+        id: maps[index]['id'],
+        originalSentence: maps[index]['originalSentence'],
+        translatedSentence: maps[index]['translatedSentence'],
+        type: maps[index]['type'],
+      );
+    });
   }
 }

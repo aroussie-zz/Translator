@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Language.dart';
+import 'package:myTranslator/models/PreferencesModel.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:translator/translator.dart';
 
@@ -19,9 +21,10 @@ class TranslatePage extends StatefulWidget {
 }
 
 class _TranslatePageState extends State<TranslatePage> {
+
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
-  final translator = new GoogleTranslator();
+  final _translator = new GoogleTranslator();
   List<Language> _languages = [];
   Language _originalLanguage;
   Language _languageToTranslateTo;
@@ -29,19 +32,14 @@ class _TranslatePageState extends State<TranslatePage> {
   @override
   void initState() {
     super.initState();
-    _inputController.addListener(() async {
-      String input = _inputController.text;
-      _outputController.text = input.isEmpty
-          ? ""
-          : await translator.translate(_inputController.text,
-              from: _originalLanguage.isoCode,
-              to: _languageToTranslateTo.isoCode);
-    });
     _fetchLocalLanguages();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    _originalLanguage = Provider.of<PreferencesModel>(context).originalLanguage;
+    _languageToTranslateTo = Provider.of<PreferencesModel>(context).translatedLanguage;
 
     return SafeArea(
         child: Scaffold(
@@ -57,7 +55,7 @@ class _TranslatePageState extends State<TranslatePage> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 _buildTopBar(context),
-                _buildTranslationCard(),
+                _buildTranslationCard(context),
                 _buildButtons()
               ],
             )));
@@ -78,7 +76,7 @@ class _TranslatePageState extends State<TranslatePage> {
         IconButton(
           icon: Icon(Icons.compare_arrows),
           onPressed: () {
-            _switchLanguages();
+            _switchLanguages(context);
           },
         ),
         Expanded(
@@ -93,7 +91,18 @@ class _TranslatePageState extends State<TranslatePage> {
     );
   }
 
-  Widget _buildTranslationInput() {
+  Widget _buildTranslationInput(BuildContext context) {
+
+    _inputController.addListener(() async {
+      String input = _inputController.text;
+      _outputController.text = input.isEmpty
+          ? ""
+          : await _translator.translate(_inputController.text,
+          from: _originalLanguage.isoCode,
+          to: _languageToTranslateTo.isoCode);
+    });
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -135,13 +144,13 @@ class _TranslatePageState extends State<TranslatePage> {
     );
   }
 
-  Widget _buildTranslationCard() {
+  Widget _buildTranslationCard(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Column(
         children: <Widget>[
-          _buildTranslationInput(),
+          _buildTranslationInput(context),
           Divider(),
           _buildTranslationOutput(),
         ],
@@ -195,8 +204,8 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   void _fetchLocalLanguages() async {
-    String localJsonString = await rootBundle
-        .loadString('assets/languages.json');
+    String localJsonString =
+        await rootBundle.loadString('assets/languages.json');
 
     if (localJsonString == null) {
       return;
@@ -223,40 +232,40 @@ class _TranslatePageState extends State<TranslatePage> {
 
     if (selectedLanguage == null) return;
 
-    setState(() {
-      if (isOriginalLanguage) {
-        _originalLanguage = selectedLanguage;
-      } else {
-        _languageToTranslateTo = selectedLanguage;
+    if (isOriginalLanguage) {
+      Provider.of<PreferencesModel>(context).updateOriginalLanguage(selectedLanguage);
+    } else {
+      Provider.of<PreferencesModel>(context).updateTranslatedLanguage(selectedLanguage);
+      if (_inputController.text.isNotEmpty) {
+        _outputController.text = await _translator.translate(_inputController.text,
+            from: _originalLanguage.isoCode, to: selectedLanguage.isoCode);
       }
-    });
+    }
   }
 
-  _switchLanguages() async {
-    Language tmp = _originalLanguage;
+  _switchLanguages(BuildContext context) async {
 
-    setState(() {
-      _originalLanguage = _languageToTranslateTo;
-      _languageToTranslateTo = tmp;
-    });
+    var originalIso = _originalLanguage.isoCode;
+    var translatedIso = _languageToTranslateTo.isoCode;
+
+    Provider.of<PreferencesModel>(context).switchLanguages();
 
     if (_inputController.text.isNotEmpty) {
-      _outputController.text = await translator.translate(_inputController.text,
-          from: _originalLanguage.isoCode, to: tmp.isoCode);
+      _outputController.text = await _translator.translate(_inputController.text,
+          from: translatedIso, to: originalIso);
     }
   }
 
   void _saveTranslationInDB() async {
     var database = await openDatabase(
         join(await getDatabasesPath(), "my_translation_database.db"));
-    
-    var translation = new Translation.forDatabase(
-      originalSentence: _inputController.text,
-      translatedSentence: _outputController.text,
-      type: "${_originalLanguage.name} -> ${_languageToTranslateTo.name}"
-    );
 
-    await database.insert("translation", translation.toMap()).then( (_) {
+    var translation = new Translation.forDatabase(
+        originalSentence: _inputController.text,
+        translatedSentence: _outputController.text,
+        type: "${_originalLanguage.name} -> ${_languageToTranslateTo.name}");
+
+    await database.insert("translation", translation.toMap()).then((_) {
       _inputController.text = "";
     });
   }

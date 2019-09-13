@@ -29,7 +29,7 @@ class _HomeListState extends State<HomeListPage> {
               builder: (context, snapshot) {
                 _translations = snapshot.data;
                 return _translations == null
-                    ? CircularProgressIndicator()
+                    ? Center(child: CircularProgressIndicator())
                     : _translations.isNotEmpty
                         ? AnimatedList(
                             key: _listKey,
@@ -41,10 +41,9 @@ class _HomeListState extends State<HomeListPage> {
                         : Center(
                             child: Text(
                                 "You don't have any saved translations."
-                                    " Start translating sentences by pressing + at the bottom of the screen!",
-                            textAlign: TextAlign.center,
-                            textScaleFactor: 2)
-                          );
+                                " Start translating sentences by pressing + at the bottom of the screen!",
+                                textAlign: TextAlign.center,
+                                textScaleFactor: 2));
               })),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
@@ -70,7 +69,7 @@ class _HomeListState extends State<HomeListPage> {
   }
 
   ///Delete an item with a nice animation
-  void _deleteListItem(Translation itemToDelete) async{
+  void _deleteListItem(Translation itemToDelete) async {
     int indexToDelete = _translations.indexOf(itemToDelete);
     _translations.remove(itemToDelete);
     AnimatedListRemovedItemBuilder builder = (context, animation) {
@@ -81,7 +80,8 @@ class _HomeListState extends State<HomeListPage> {
 
     var database = await openDatabase(
         join(await getDatabasesPath(), "my_translation_database.db"));
-    database.delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
+    database
+        .delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
   }
 
   ///Open or create a Database and fetch the exising translations

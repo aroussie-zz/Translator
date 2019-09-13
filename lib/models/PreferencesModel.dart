@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'Language.dart';
 
+//TODO: CREATE A PREFERENCES PAGE
 class PreferencesModel extends ChangeNotifier{
 
   Language originalLanguage;
@@ -27,8 +28,8 @@ class PreferencesModel extends ChangeNotifier{
   }
 
   void _updateWith({ Language original, Language translated}){
-   this.originalLanguage = original;
-   this.translatedLanguage = translated;
+   this.originalLanguage = original ?? this.originalLanguage;
+   this.translatedLanguage = translated ?? this.translatedLanguage;
    notifyListeners();
   }
 

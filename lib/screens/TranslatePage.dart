@@ -8,7 +8,6 @@ import 'package:myTranslator/models/PreferencesModel.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:translator/translator.dart';
 
@@ -25,7 +24,7 @@ class _TranslatePageState extends State<TranslatePage> {
 
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _outputController = TextEditingController();
-  final translator = new GoogleTranslator();
+  final _translator = new GoogleTranslator();
   List<Language> _languages = [];
   Language _originalLanguage;
   Language _languageToTranslateTo;
@@ -98,7 +97,7 @@ class _TranslatePageState extends State<TranslatePage> {
       String input = _inputController.text;
       _outputController.text = input.isEmpty
           ? ""
-          : await translator.translate(_inputController.text,
+          : await _translator.translate(_inputController.text,
           from: _originalLanguage.isoCode,
           to: _languageToTranslateTo.isoCode);
     });
@@ -237,6 +236,10 @@ class _TranslatePageState extends State<TranslatePage> {
       Provider.of<PreferencesModel>(context).updateOriginalLanguage(selectedLanguage);
     } else {
       Provider.of<PreferencesModel>(context).updateTranslatedLanguage(selectedLanguage);
+      if (_inputController.text.isNotEmpty) {
+        _outputController.text = await _translator.translate(_inputController.text,
+            from: _originalLanguage.isoCode, to: selectedLanguage.isoCode);
+      }
     }
   }
 
@@ -248,7 +251,7 @@ class _TranslatePageState extends State<TranslatePage> {
     Provider.of<PreferencesModel>(context).switchLanguages();
 
     if (_inputController.text.isNotEmpty) {
-      _outputController.text = await translator.translate(_inputController.text,
+      _outputController.text = await _translator.translate(_inputController.text,
           from: translatedIso, to: originalIso);
     }
   }

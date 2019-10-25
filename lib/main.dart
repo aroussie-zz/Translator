@@ -16,6 +16,8 @@ void main() async {
   const String SHARED_PREF_TRANSLATED_LANGUAGE_ISO =
       "SHARED_PREF_TRANSLATED_LANGUAGE_ISO";
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String originalLanguageName =

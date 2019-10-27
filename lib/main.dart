@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myTranslator/screens/TranslatePage.dart';
+import 'package:myTranslator/screens/TranslationListPage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -58,6 +60,12 @@ class MyApp extends StatelessWidget {
         providers: [ChangeNotifierProvider.value(value: preferencesModel)],
         child: MaterialApp(
           title: 'Flutter Demo',
+          initialRoute: '/',
+          routes: {
+            '/': (context) => HomeListPage(),
+            '/home': (context) => TranslationListPage(),
+            '/translate': (context) => TranslatePage()
+          },
           theme: ThemeData(
             // This is the theme of your application.
             //
@@ -70,7 +78,6 @@ class MyApp extends StatelessWidget {
             // is not restarted.
             primarySwatch: Colors.blue,
           ),
-          home: HomeListPage(),
         ));
   }
 }

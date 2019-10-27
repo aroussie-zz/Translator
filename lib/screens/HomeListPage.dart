@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
+import 'package:myTranslator/screens/TranslationListPage.dart';
+import 'package:myTranslator/utilities/TabDestination.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -12,45 +14,106 @@ class HomeListPage extends StatefulWidget {
   }
 }
 
-class _HomeListState extends State<HomeListPage> {
+class _HomeListState extends State<HomeListPage>
+    with TickerProviderStateMixin<HomeListPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
   List<Translation> _translations = [];
+  int _currentIndex;
+  int _indexToPopOut = 0;
+
+  Map<String, GlobalKey<NavigatorState>> navigatorKeys = {
+    "page0": GlobalKey<NavigatorState>(),
+    "page1": GlobalKey<NavigatorState>(),
+    "page2": GlobalKey<NavigatorState>(),
+    "page3": GlobalKey<NavigatorState>(),
+  };
+
+  List<TabDestination> allTabDestinations = <TabDestination>[
+    TabDestination(
+        position: 0,
+        title: 'Home',
+        icon: Icons.home,
+        color: Colors.blue,
+        screen: TranslationListPage()),
+    TabDestination(
+        position: 1,
+        title: 'Translate',
+        icon: Icons.translate,
+        color: Colors.blue,
+        screen: TranslatePage()),
+    TabDestination(
+        position: 2,
+        title: 'Notes',
+        icon: Icons.receipt,
+        color: Colors.blue,
+        screen: TranslationListPage()),
+    TabDestination(
+        position: 3,
+        title: 'Quizz',
+        icon: Icons.school,
+        color: Colors.blue,
+        screen: TranslatePage())
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = 0;
+  }
+
+  Future<bool> _onWillPop() async {
+    var canScreenPop =
+        !await navigatorKeys["page$_currentIndex"].currentState.maybePop();
+    if (!canScreenPop) {
+      return canScreenPop;
+    } else {
+      setState(() {
+        _currentIndex = _indexToPopOut;
+      });
+      return _currentIndex != _indexToPopOut;
+    }
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+            top: false,
+            child: WillPopScope(
+                onWillPop: () => _onWillPop(),
+                child: IndexedStack(
+                    index: _currentIndex,
+                    children: allTabDestinations
+                        .map<Widget>((TabDestination destination) {
+                      return Navigator(
+                          key: navigatorKeys["page${destination.position}"],
+                          initialRoute: '/',
+                          onGenerateRoute: (RouteSettings settings) =>
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      destination.screen));
+                    }).toList()))));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("My Translations"),
+      body: _buildBody(context),
+      bottomNavigationBar: BottomNavigationBar(
+        items: allTabDestinations.map((TabDestination destination) {
+          return BottomNavigationBarItem(
+              icon: Icon(destination.icon),
+              title: Text(destination.title),
+              backgroundColor: destination.color);
+        }).toList(),
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _indexToPopOut = _currentIndex;
+            _currentIndex = index;
+          });
+        },
       ),
-      body: SafeArea(
-          child: FutureBuilder(
-              future: _fetchTranslations(),
-              builder: (context, snapshot) {
-                _translations = snapshot.data;
-                return _translations == null
-                    ? Center(child: CircularProgressIndicator())
-                    : _translations.isNotEmpty
-                        ? AnimatedList(
-                            key: _listKey,
-                            initialItemCount: _translations.length,
-                            itemBuilder: (context, index, animation) {
-                              return _buildListTile(
-                                  _translations[index], animation);
-                            })
-                        : Center(
-                            child: Text(
-                                "You don't have any saved translations."
-                                " Start translating sentences by pressing + at the bottom of the screen!",
-                                textAlign: TextAlign.center,
-                                textScaleFactor: 2));
-              })),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => TranslatePage()));
-          }),
     );
   }
 

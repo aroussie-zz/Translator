@@ -68,10 +68,13 @@ class _HomeListState extends State<HomeListPage>
     if (!canScreenPop) {
       return canScreenPop;
     } else {
-      setState(() {
-        _currentIndex = _indexToPopOut;
-      });
-      return _currentIndex != _indexToPopOut;
+      if (_currentIndex == _indexToPopOut){
+        return Future.value(true);
+      } else {
+        setState(() {
+          _currentIndex = _indexToPopOut;
+        });
+      }
     }
   }
 

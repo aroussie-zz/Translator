@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/Language.dart';
 import 'models/PreferencesModel.dart';
-import 'screens/HomeListPage.dart';
+import 'screens/HomePage.dart';
 
 void main() async {
   const String SHARED_PREF_ORIGINAL_LANGUAGE_NAME =
@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Demo',
           initialRoute: '/',
           routes: {
-            '/': (context) => HomeListPage(),
+            '/': (context) => HomePage(),
             '/home': (context) => TranslationListPage(),
             '/translate': (context) => TranslatePage()
           },

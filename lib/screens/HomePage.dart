@@ -4,14 +4,14 @@ import 'package:myTranslator/utilities/TabDestination.dart';
 
 import 'TranslatePage.dart';
 
-class HomeListPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _HomeListState();
+    return _HomeState();
   }
 }
 
-class _HomeListState extends State<HomeListPage>{
+class _HomeState extends State<HomePage>{
 
   int _currentIndex;
   int _indexToPopOut = 0;

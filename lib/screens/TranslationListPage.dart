@@ -1,57 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
+import 'package:myTranslator/screens/TranslatePage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'TranslatePage.dart';
-
-class HomeListPage extends StatefulWidget {
+class TranslationListPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _HomeListState();
+  _TranslationListState createState() {
+    return _TranslationListState();
   }
 }
 
-class _HomeListState extends State<HomeListPage> {
+class _TranslationListState extends State<TranslationListPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-
   List<Translation> _translations = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("My Translations"),
-      ),
-      body: SafeArea(
-          child: FutureBuilder(
-              future: _fetchTranslations(),
-              builder: (context, snapshot) {
-                _translations = snapshot.data;
-                return _translations == null
-                    ? Center(child: CircularProgressIndicator())
-                    : _translations.isNotEmpty
-                        ? AnimatedList(
-                            key: _listKey,
-                            initialItemCount: _translations.length,
-                            itemBuilder: (context, index, animation) {
-                              return _buildListTile(
-                                  _translations[index], animation);
-                            })
-                        : Center(
-                            child: Text(
-                                "You don't have any saved translations."
-                                " Start translating sentences by pressing + at the bottom of the screen!",
-                                textAlign: TextAlign.center,
-                                textScaleFactor: 2));
-              })),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => TranslatePage()));
-          }),
-    );
+        appBar: AppBar(
+          title: Text("My Translations"),
+        ),
+        body: SafeArea(
+            child: FutureBuilder(
+                future: _fetchTranslations(),
+                builder: (context, snapshot) {
+                  _translations = snapshot.data;
+                  return _translations == null
+                      ? Center(child: CircularProgressIndicator())
+                      : _translations.isNotEmpty
+                          ? AnimatedList(
+                              key: _listKey,
+                              initialItemCount: _translations.length,
+                              itemBuilder: (context, index, animation) {
+                                return _buildListTile(
+                                    _translations[index], animation);
+                              })
+                          : Center(
+                              child: Text(
+                                  "You don't have any saved translations."
+                                  " Start translating sentences by pressing + at the bottom of the screen!",
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 2));
+                })),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => TranslatePage()));
+            }));
   }
 
   ///Build an item with animation that will be given by the AnimatedList

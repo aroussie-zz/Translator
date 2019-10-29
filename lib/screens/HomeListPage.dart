@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
 import 'TranslatePage.dart';
 
@@ -14,11 +11,8 @@ class HomeListPage extends StatefulWidget {
   }
 }
 
-class _HomeListState extends State<HomeListPage>
-    with TickerProviderStateMixin<HomeListPage> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+class _HomeListState extends State<HomeListPage>{
 
-  List<Translation> _translations = [];
   int _currentIndex;
   int _indexToPopOut = 0;
 
@@ -62,42 +56,6 @@ class _HomeListState extends State<HomeListPage>
     _currentIndex = 0;
   }
 
-  Future<bool> _onWillPop() async {
-    var canScreenPop =
-        !await navigatorKeys["page$_currentIndex"].currentState.maybePop();
-    if (!canScreenPop) {
-      return canScreenPop;
-    } else {
-      if (_currentIndex == _indexToPopOut){
-        return Future.value(true);
-      } else {
-        setState(() {
-          _currentIndex = _indexToPopOut;
-        });
-      }
-    }
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            top: false,
-            child: WillPopScope(
-                onWillPop: () => _onWillPop(),
-                child: IndexedStack(
-                    index: _currentIndex,
-                    children: allTabDestinations
-                        .map<Widget>((TabDestination destination) {
-                      return Navigator(
-                          key: navigatorKeys["page${destination.position}"],
-                          initialRoute: '/',
-                          onGenerateRoute: (RouteSettings settings) =>
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      destination.screen));
-                    }).toList()))));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,59 +78,58 @@ class _HomeListState extends State<HomeListPage>
     );
   }
 
-  ///Build an item with animation that will be given by the AnimatedList
-  Widget _buildListTile(Translation translation, Animation animation) {
-    return SizeTransition(
-        sizeFactor: animation,
-        child: ListTile(
-            title: Text(translation.originalSentence),
-            subtitle: Text(translation.translatedSentence),
-            trailing: IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
-                  _deleteListItem(translation);
-                })));
+  Future<bool> _onWillPop() async {
+    //Check if the current screen can pop internally
+    var canScreenPop =
+        await navigatorKeys["page$_currentIndex"].currentState.maybePop();
+    // If it can, then do nothing and just let the current screen pop
+    if (canScreenPop) {
+      return Future.value(false);
+      // Otherwise we check if we can back from the BottomNavigationBar
+    } else {
+      // If we cannot, then we leave the app
+      if (_currentIndex == _indexToPopOut) {
+        return Future.value(true);
+      } else {
+        //Otherwise, we just display the previous screen without popping anything
+        setState(() {
+          _currentIndex = _indexToPopOut;
+        });
+        return Future.value(false);
+      }
+    }
   }
 
-  ///Delete an item with a nice animation
-  void _deleteListItem(Translation itemToDelete) async {
-    int indexToDelete = _translations.indexOf(itemToDelete);
-    _translations.remove(itemToDelete);
-    AnimatedListRemovedItemBuilder builder = (context, animation) {
-      return _buildListTile(itemToDelete, animation);
-    };
-
-    _listKey.currentState.removeItem(indexToDelete, builder);
-
-    var database = await openDatabase(
-        join(await getDatabasesPath(), "my_translation_database.db"));
-    database
-        .delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
+  Widget _buildBody(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+            top: false,
+            child: WillPopScope(
+                onWillPop: () => _onWillPop(),
+                child: Navigator(
+                    key: navigatorKeys["page$_currentIndex"],
+                    initialRoute: '/',
+                    onGenerateRoute: (RouteSettings settings) =>
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                allTabDestinations[_currentIndex].screen)))));
   }
 
-  ///Open or create a Database and fetch the exising translations
-  Future<List<Translation>> _fetchTranslations() async {
-    var database = await openDatabase(
-        join(await getDatabasesPath(), "my_translation_database.db"),
-        onCreate: (db, version) {
-      //Create the Translation table when created
-      return db.execute("CREATE TABLE translation("
-          "id INTEGER PRIMARY KEY,"
-          "originalSentence TEXT,"
-          "translatedSentence TEXT,"
-          "type TEXT)");
-    }, version: 1);
-
-    final List<Map<String, dynamic>> maps = await database.query("translation");
-
-    //TODO: Refactor the logic to sort the translations
-    return List.generate(maps.length, (index) {
-      return Translation(
-        id: maps[index]['id'],
-        originalSentence: maps[index]['originalSentence'],
-        translatedSentence: maps[index]['translatedSentence'],
-        type: maps[index]['type'],
-      );
-    });
+  ///This can be used if needed to keep state of each screen.
+  ///CAREFUL: This won't refresh each screen when tapped...
+  Widget _buildBodyWithStateKept(BuildContext context) {
+    {
+      return IndexedStack(
+          index: _currentIndex,
+          children:
+              allTabDestinations.map<Widget>((TabDestination destination) {
+            //Return a Navigator so we can internal navigation within the tab
+            return Navigator(
+                key: navigatorKeys["page${destination.position}"],
+                initialRoute: '/',
+                onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
+                    builder: (BuildContext context) => destination.screen));
+          }).toList());
+    }
   }
 }

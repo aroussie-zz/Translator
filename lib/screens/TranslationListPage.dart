@@ -4,8 +4,14 @@ import 'package:myTranslator/screens/TranslatePage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TranslationListPage extends StatelessWidget {
+class TranslationListPage extends StatefulWidget {
+  @override
+  _TranslationListState createState() {
+    return _TranslationListState();
+  }
+}
 
+class _TranslationListState extends State<TranslationListPage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<Translation> _translations = [];
 
@@ -80,13 +86,13 @@ class TranslationListPage extends StatelessWidget {
     var database = await openDatabase(
         join(await getDatabasesPath(), "my_translation_database.db"),
         onCreate: (db, version) {
-          //Create the Translation table when created
-          return db.execute("CREATE TABLE translation("
-              "id INTEGER PRIMARY KEY,"
-              "originalSentence TEXT,"
-              "translatedSentence TEXT,"
-              "type TEXT)");
-        }, version: 1);
+      //Create the Translation table when created
+      return db.execute("CREATE TABLE translation("
+          "id INTEGER PRIMARY KEY,"
+          "originalSentence TEXT,"
+          "translatedSentence TEXT,"
+          "type TEXT)");
+    }, version: 1);
 
     final List<Map<String, dynamic>> maps = await database.query("translation");
 

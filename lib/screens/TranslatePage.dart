@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -262,10 +263,13 @@ class _TranslatePageState extends State<TranslatePage> {
     var database = await openDatabase(
         join(await getDatabasesPath(), "my_translation_database.db"));
 
-    var translation = new Translation.forDatabase(
-        originalSentence: _inputController.text,
-        translatedSentence: _outputController.text,
-        type: "${_originalLanguage.name} -> ${_languageToTranslateTo.name}");
+    //TODO: Uncomment this once everything is ready
+//    var translation = new Translation.forDatabase(
+//        originalSentence: _inputController.text,
+//        translatedSentence: _outputController.text,
+//        type: "${_originalLanguage.name} -> ${_languageToTranslateTo.name}");
+
+    var translation = new Translation.dummy(new Random().nextInt(10));
 
     await database.insert("translation", translation.toMap()).then((_) {
       _inputController.text = "";

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myTranslator/screens/TranslationListPage.dart';
 
 //SEE https://medium.com/flutter/getting-to-the-bottom-of-navigation-in-flutter-b3e440b9386
 class TabDestination {

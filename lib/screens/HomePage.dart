@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
 
+import 'NotesListPage.dart';
 import 'TranslatePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _HomeState extends State<HomePage>{
         title: 'Notes',
         icon: Icons.receipt,
         color: Colors.blue,
-        screen: TranslationListPage()),
+        screen: NotesListPage()),
     TabDestination(
         position: 3,
         title: 'Quizz',

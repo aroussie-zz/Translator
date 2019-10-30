@@ -118,6 +118,8 @@ class _HomeState extends State<HomePage>{
 
   ///This can be used if needed to keep state of each screen.
   ///CAREFUL: This won't refresh each screen when tapped...
+  //TODO: SHOULD USE THIS LOGIC COMBINED WITH THE PROVIDER ARCHITECTURE TO MAKE THE PAGE REFRESHED IS SOMETHING GOT ADDED TO IT
+  // CAUSE RIGHT NOW THE TRANSITION BETWEEN PAGE IS A BIT LAGGY
   Widget _buildBodyWithStateKept(BuildContext context) {
     {
       return IndexedStack(

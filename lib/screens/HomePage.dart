@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
 
+import 'NotesListPage.dart';
 import 'TranslatePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _HomeState extends State<HomePage>{
         title: 'Notes',
         icon: Icons.receipt,
         color: Colors.blue,
-        screen: TranslationListPage()),
+        screen: NotesListPage()),
     TabDestination(
         position: 3,
         title: 'Quizz',
@@ -117,6 +118,8 @@ class _HomeState extends State<HomePage>{
 
   ///This can be used if needed to keep state of each screen.
   ///CAREFUL: This won't refresh each screen when tapped...
+  //TODO: SHOULD USE THIS LOGIC COMBINED WITH THE PROVIDER ARCHITECTURE TO MAKE THE PAGE REFRESHED IS SOMETHING GOT ADDED TO IT
+  // CAUSE RIGHT NOW THE TRANSITION BETWEEN PAGE IS A BIT LAGGY
   Widget _buildBodyWithStateKept(BuildContext context) {
     {
       return IndexedStack(

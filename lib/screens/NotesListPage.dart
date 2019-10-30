@@ -51,38 +51,42 @@ class _NotesListState extends State<NotesListPage> {
         (size.height - kBottomNavigationBarHeight - kToolbarHeight) / 2.2;
 
     return Scaffold(
-        appBar: AppBar(title: Text("My Notes")),
-        body: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: GridView.count(
-            mainAxisSpacing: 0.0,
-            crossAxisSpacing: 12.0,
-            crossAxisCount: 1,
-            childAspectRatio: tableWidth / tableHeight,
-            children: _itemToDisplay.map((Widget text) {
-              return new Table(
-                border: TableBorder.all(color: Colors.black, width: 1.0),
-                children: [
-                  _buildTableRowTitle(
-                      verb.original_title, verb.translated_title),
-                  _buildTableRow(
-                      verb.original_firstPerson, verb.translated_firstPerson),
-                  _buildTableRow(
-                      verb.original_secondPerson, verb.translated_secondPerson),
-                  _buildTableRow(
-                      verb.original_thirdPerson, verb.translated_thirdPerson),
-                  _buildTableRow(
-                      verb.original_fourthPerson, verb.translated_fourthPerson),
-                  _buildTableRow(
-                      verb.original_fifthPerson, verb.translated_fifthPerson),
-                  _buildTableRow(
-                      verb.original_sixthPerson, verb.translated_sixthPerson)
-                ],
-              );
-            }).toList(),
-          ),
-        )));
+      appBar: AppBar(title: Text("My Notes")),
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.count(
+          mainAxisSpacing: 0.0,
+          crossAxisSpacing: 12.0,
+          crossAxisCount: 1,
+          childAspectRatio: tableWidth / tableHeight,
+          children: _itemToDisplay.map((Widget text) {
+            return new Table(
+              border: TableBorder.all(color: Colors.black, width: 1.0),
+              children: [
+                _buildTableRowTitle(verb.original_title, verb.translated_title),
+                _buildTableRow(
+                    verb.original_firstPerson, verb.translated_firstPerson),
+                _buildTableRow(
+                    verb.original_secondPerson, verb.translated_secondPerson),
+                _buildTableRow(
+                    verb.original_thirdPerson, verb.translated_thirdPerson),
+                _buildTableRow(
+                    verb.original_fourthPerson, verb.translated_fourthPerson),
+                _buildTableRow(
+                    verb.original_fifthPerson, verb.translated_fifthPerson),
+                _buildTableRow(
+                    verb.original_sixthPerson, verb.translated_sixthPerson)
+              ],
+            );
+          }).toList(),
+        ),
+      )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _onAddButtonClicked(),
+        child: Icon(Icons.add),
+      ),
+    );
   }
 
   TableRow _buildTableRow(String firstCellString, String secondCellString) {
@@ -113,5 +117,10 @@ class _NotesListState extends State<NotesListPage> {
         child: Center(child: Text(translatedTitle, style: _verbTitleTextStyle)),
       ))
     ]);
+  }
+
+  void _onAddButtonClicked() {
+    //TODO: Push to add a Verb page.
+    print("Clicked!!");
   }
 }

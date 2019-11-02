@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Verb.dart';
 
+import 'VerbPage.dart';
+
 class NotesListPage extends StatefulWidget {
   @override
   _NotesListState createState() {
@@ -83,7 +85,7 @@ class _NotesListState extends State<NotesListPage> {
         ),
       )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _onAddButtonClicked(),
+        onPressed: () => _onAddButtonClicked(context),
         child: Icon(Icons.add),
       ),
     );
@@ -119,8 +121,7 @@ class _NotesListState extends State<NotesListPage> {
     ]);
   }
 
-  void _onAddButtonClicked() {
-    //TODO: Push to add a Verb page.
-    print("Clicked!!");
+  void _onAddButtonClicked(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
   }
 }

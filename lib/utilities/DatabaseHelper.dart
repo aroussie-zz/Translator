@@ -74,6 +74,14 @@ class DatabaseHelper {
     return results;
   }
 
+  Future<List<Verb>> fetchVerbs() async {
+    Database db = await this.database;
+    var results = await db.query(this.verbTable);
+    return List.generate(results.length, (index) {
+      return Verb.fromDatabase(json: results[index]);
+    });
+  }
+
 
 
 

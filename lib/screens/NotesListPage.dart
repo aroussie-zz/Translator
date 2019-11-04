@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Verb.dart';
+import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 import 'VerbPage.dart';
 
@@ -16,33 +17,7 @@ class _NotesListState extends State<NotesListPage> {
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   var _verbTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
 
-  var _itemToDisplay = [
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo"),
-    Text("Helllllllllllo")
-  ];
-
-  var verb = new Verb(
-      original_title: "BE",
-      original_firstPerson: "I am",
-      original_secondPerson: "You are",
-      original_thirdPerson: "He/She is",
-      original_fourthPerson: "We are",
-      original_fifthPerson: "You are",
-      original_sixthPerson: "They are",
-      translated_title: "ÊTRE",
-      translated_firstPerson: "Je suis",
-      translated_secondPerson: "Tu es",
-      translated_thirdPerson: "Il/Elle/On est",
-      translated_fourthPerson: "Nous sommes",
-      translated_fifthPerson: "Vous êtes",
-      translated_sixthPerson: "Ils/Elles sont");
+  List<Verb> _verbs = [];
 
   @override
   Widget build(BuildContext context) {
@@ -57,32 +32,48 @@ class _NotesListState extends State<NotesListPage> {
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
-          mainAxisSpacing: 0.0,
-          crossAxisSpacing: 12.0,
-          crossAxisCount: 1,
-          childAspectRatio: tableWidth / tableHeight,
-          children: _itemToDisplay.map((Widget text) {
-            return new Table(
-              border: TableBorder.all(color: Colors.black, width: 1.0),
-              children: [
-                _buildTableRowTitle(verb.original_title, verb.translated_title),
-                _buildTableRow(
-                    verb.original_firstPerson, verb.translated_firstPerson),
-                _buildTableRow(
-                    verb.original_secondPerson, verb.translated_secondPerson),
-                _buildTableRow(
-                    verb.original_thirdPerson, verb.translated_thirdPerson),
-                _buildTableRow(
-                    verb.original_fourthPerson, verb.translated_fourthPerson),
-                _buildTableRow(
-                    verb.original_fifthPerson, verb.translated_fifthPerson),
-                _buildTableRow(
-                    verb.original_sixthPerson, verb.translated_sixthPerson)
-              ],
-            );
-          }).toList(),
-        ),
+        child: FutureBuilder(
+            future: _fetchVerbs(),
+            builder: (context, snapshot) {
+              _verbs = snapshot.data;
+              return _verbs == null
+                  ? Center(child: CircularProgressIndicator())
+                  : _verbs.isNotEmpty
+                      ? GridView.count(
+                          mainAxisSpacing: 0.0,
+                          crossAxisSpacing: 12.0,
+                          crossAxisCount: 1,
+                          childAspectRatio: tableWidth / tableHeight,
+                          children: _verbs.map((Verb verb) {
+                            return new Table(
+                              border: TableBorder.all(
+                                  color: Colors.black, width: 1.0),
+                              children: [
+                                _buildTableRowTitle(
+                                    verb.original_title, verb.translated_title),
+                                _buildTableRow(verb.original_firstPerson,
+                                    verb.translated_firstPerson),
+                                _buildTableRow(verb.original_secondPerson,
+                                    verb.translated_secondPerson),
+                                _buildTableRow(verb.original_thirdPerson,
+                                    verb.translated_thirdPerson),
+                                _buildTableRow(verb.original_fourthPerson,
+                                    verb.translated_fourthPerson),
+                                _buildTableRow(verb.original_fifthPerson,
+                                    verb.translated_fifthPerson),
+                                _buildTableRow(verb.original_sixthPerson,
+                                    verb.translated_sixthPerson)
+                              ],
+                            );
+                          }).toList(),
+                        )
+                      : Center(
+                          child: Text(
+                              "You don't have any saved verbs."
+                              "You can add some by clicking on the + at the bottom of the screen!",
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 2));
+            }),
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onAddButtonClicked(context),
@@ -122,10 +113,13 @@ class _NotesListState extends State<NotesListPage> {
   }
 
   void _onAddButtonClicked(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
   }
 
-  Future<List<Verb>> _fetchVerbs(){
-
+  ///Fetch verbs from the database
+  Future<List<Verb>> _fetchVerbs() {
+    var databaseHelper = DatabaseHelper();
+    return databaseHelper.fetchVerbs();
   }
 }

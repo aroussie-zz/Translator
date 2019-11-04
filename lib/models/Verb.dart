@@ -47,6 +47,26 @@ class Verb{
     this.translated_title, this.translated_firstPerson, this.translated_secondPerson, this.translated_thirdPerson,
     this.translated_fourthPerson, this.translated_fifthPerson, this.translated_sixthPerson});
 
+  Verb.fromDatabase({Map<String, dynamic> json}) {
+    this.id = json['id'];
+    this.original_title = json['originalTitle'];
+    this.original_firstPerson = json['originalFirstPerson'];
+    this.original_secondPerson = json['originalSecondPerson'];
+    this.original_thirdPerson = json['originalThirdPerson'];
+    this.original_fourthPerson = json['originalFourthPerson'];
+    this.original_fifthPerson = json['originalFifthPerson'];
+    this.original_sixthPerson = json['originalSixthPerson'];
+
+    this.translated_title = json['translatedTitle'];
+    this.translated_firstPerson = json['translatedFirstPerson'];
+    this.translated_secondPerson = json['translatedSecondPerson'];
+    this.translated_thirdPerson = json['translatedThirdPerson'];
+    this.translated_fourthPerson = json['translatedFourthPerson'];
+    this.translated_fifthPerson = json['translatedFifthPerson'];
+    this.translated_sixthPerson = json['translatedSixthPerson'];
+
+  }
+
 
   Map<String, dynamic> toMap(){
 
@@ -73,6 +93,5 @@ class Verb{
 
     return map;
   }
-
 
 }

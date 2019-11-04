@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:myTranslator/models/Verb.dart';
+import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 class VerbPage extends StatefulWidget {
   @override
@@ -246,8 +248,31 @@ class _VerbState extends State<VerbPage> {
     ]);
   }
 
-  void _saveVerb() {
-    print("Button Clicked!");
+  /// Save the verb within the Database
+  void _saveVerb() async {
+
+    var verb = Verb.forDatabase(
+      original_title: _originalTitleController.text,
+      original_firstPerson: _originalFirstPersonController.text,
+      original_secondPerson: _originalSecondPersonController.text,
+      original_thirdPerson: _originalThirdPersonController.text,
+      original_fourthPerson: _originalFourthPersonController.text,
+      original_fifthPerson: _originalFifthPersonController.text,
+      original_sixthPerson: _originalSixthPersonController.text,
+      translated_title: _translatedTitleController.text,
+      translated_firstPerson: _translatedFirstPersonController.text,
+      translated_secondPerson: _translatedSecondPersonController.text,
+      translated_thirdPerson: _translatedThirdPersonController.text,
+      translated_fourthPerson: _translatedFourthPersonController.text,
+      translated_fifthPerson: _translatedFifthPersonController.text,
+      translated_sixthPerson: _translatedSixthPersonController.text,
+    );
+
+    var databaseHelper = DatabaseHelper();
+    int result = await databaseHelper.insertVerb(verb);
+
+    //TODO Display a SnackBar when success?
+
   }
 
   void _defineFocus(BuildContext context, FocusNode focusToGoTo) {

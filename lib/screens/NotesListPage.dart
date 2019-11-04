@@ -124,4 +124,8 @@ class _NotesListState extends State<NotesListPage> {
   void _onAddButtonClicked(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
   }
+
+  Future<List<Verb>> _fetchVerbs(){
+
+  }
 }

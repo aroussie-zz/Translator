@@ -7,9 +7,8 @@ import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Language.dart';
 import 'package:myTranslator/models/PreferencesModel.dart';
 import 'package:myTranslator/models/Translation.dart';
-import 'package:path/path.dart';
+import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:translator/translator.dart';
 
 import 'PickLanguagePage.dart';
@@ -260,8 +259,8 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   void _saveTranslationInDB() async {
-    var database = await openDatabase(
-        join(await getDatabasesPath(), "my_translation_database.db"));
+
+    var databaseHelper = DatabaseHelper();
 
     //TODO: Uncomment this once everything is ready
 //    var translation = new Translation.forDatabase(
@@ -271,8 +270,6 @@ class _TranslatePageState extends State<TranslatePage> {
 
     var translation = new Translation.dummy(new Random().nextInt(10));
 
-    await database.insert("translation", translation.toMap()).then((_) {
-      _inputController.text = "";
-    });
+    databaseHelper.saveTranslation(translation);
   }
 }

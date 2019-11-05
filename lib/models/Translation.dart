@@ -15,9 +15,7 @@ class Translation {
       this.type});
 
   Translation.forDatabase(
-      {this.originalSentence,
-      this.translatedSentence,
-      this.type});
+      {this.originalSentence, this.translatedSentence, this.type});
 
   Translation.dummy(int randomNumber) {
     this.id = randomNumber;
@@ -26,6 +24,13 @@ class Translation {
     this.originalLanguage = "French";
     this.translationLanguage = "English";
     this.type = "French -> English";
+  }
+
+  Translation.fromDatabase(Map<String, dynamic> json) {
+    this.id = json['id'];
+    this.originalSentence = json['originalSentence'];
+    this.translatedSentence = json['translatedSentence'];
+    this.type = json['type'];
   }
 
   Map<String, dynamic> toMap() {

@@ -1,3 +1,4 @@
+import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -68,7 +69,7 @@ class DatabaseHelper {
         "translatedSixthPerson TEXT)");
   }
 
-  Future<int> insertVerb(Verb verb) async{
+  Future<int> saveVerb(Verb verb) async{
     Database db = await this.database;
     var results = db.insert(verbTable, verb.toMap());
     return results;
@@ -79,6 +80,21 @@ class DatabaseHelper {
     var results = await db.query(this.verbTable);
     return List.generate(results.length, (index) {
       return Verb.fromDatabase(json: results[index]);
+    });
+  }
+  
+  Future<int> saveTranslation(Translation translation) async{
+    Database db = await this.database;
+    var results = db.insert(translationTable, translation.toMap());
+    return results;
+  }
+
+  Future<List<Translation>> fetchTranslations() async {
+    Database db = await this.database;
+    var result = await db.query(translationTable);
+    //TODO: Refactor the logic to sort the translations
+    return List.generate(result.length, (index) {
+      return Translation.fromDatabase(result[index]);
     });
   }
 

@@ -269,7 +269,7 @@ class _VerbState extends State<VerbPage> {
     );
 
     var databaseHelper = DatabaseHelper();
-    int result = await databaseHelper.insertVerb(verb);
+    int result = await databaseHelper.saveVerb(verb);
 
     //TODO Display a SnackBar when success?
 

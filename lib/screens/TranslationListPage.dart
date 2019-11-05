@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/screens/TranslatePage.dart';
+import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -83,27 +84,7 @@ class _TranslationListState extends State<TranslationListPage> {
 
   ///Open or create a Database and fetch the exising translations
   Future<List<Translation>> _fetchTranslations() async {
-    var database = await openDatabase(
-        join(await getDatabasesPath(), "my_translation_database.db"),
-        onCreate: (db, version) {
-      //Create the Translation table when created
-      return db.execute("CREATE TABLE translation("
-          "id INTEGER PRIMARY KEY,"
-          "originalSentence TEXT,"
-          "translatedSentence TEXT,"
-          "type TEXT)");
-    }, version: 1);
-
-    final List<Map<String, dynamic>> maps = await database.query("translation");
-
-    //TODO: Refactor the logic to sort the translations
-    return List.generate(maps.length, (index) {
-      return Translation(
-        id: maps[index]['id'],
-        originalSentence: maps[index]['originalSentence'],
-        translatedSentence: maps[index]['translatedSentence'],
-        type: maps[index]['type'],
-      );
-    });
+    var databaseHelper = DatabaseHelper();
+    return databaseHelper.fetchTranslations();
   }
 }

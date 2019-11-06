@@ -156,8 +156,9 @@ class _VerbState extends State<VerbPage> {
                           Text(widget.originalVerb == null ? "SAVE" : "UPDATE"),
                       textColor: Colors.white,
                       color: Colors.green,
-                      onPressed:
-                          _validateData() ? () => _onSavedClicked(context) : null,
+                      onPressed: _validateData()
+                          ? () => _onSavedClicked(context)
+                          : null,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                     )),
@@ -167,24 +168,8 @@ class _VerbState extends State<VerbPage> {
         ));
   }
 
-  void _setOriginalVerb(Verb verb) {
-    _originalTitleController.text = verb.original_title;
-    _originalFirstPersonController.text = verb.original_firstPerson;
-    _originalSecondPersonController.text = verb.original_secondPerson;
-    _originalThirdPersonController.text = verb.original_thirdPerson;
-    _originalFourthPersonController.text = verb.original_fourthPerson;
-    _originalFifthPersonController.text = verb.original_fifthPerson;
-    _originalSixthPersonController.text = verb.original_sixthPerson;
 
-    _translatedTitleController.text = verb.translated_title;
-    _translatedFirstPersonController.text = verb.translated_firstPerson;
-    _translatedSecondPersonController.text = verb.translated_secondPerson;
-    _translatedThirdPersonController.text = verb.translated_thirdPerson;
-    _translatedFourthPersonController.text = verb.translated_fourthPerson;
-    _translatedFifthPersonController.text = verb.translated_fifthPerson;
-    _translatedSixthPersonController.text = verb.translated_sixthPerson;
-  }
-
+  /// Build the a normal row for the table
   TableRow _buildTableRow(BuildContext context, int position) {
     return TableRow(children: [
       TableCell(
@@ -231,6 +216,7 @@ class _VerbState extends State<VerbPage> {
     ]);
   }
 
+  /// Build the row for the Verb Title
   TableRow _buildTableRowTitle(BuildContext context) {
     return TableRow(children: [
       TableCell(
@@ -278,7 +264,7 @@ class _VerbState extends State<VerbPage> {
     ]);
   }
 
-  /// Save the verb within the Database
+  /// Save or Edit the verb within the Database
   void _onSavedClicked(BuildContext context) async {
     var verb = Verb(
       id: widget.originalVerb != null ? widget.originalVerb.id : null,
@@ -320,6 +306,25 @@ class _VerbState extends State<VerbPage> {
           backgroundColor: Colors.red);
       Scaffold.of(context).showSnackBar(snackBar);
     }
+  }
+
+  /// Set the table with the data from an existing Verb
+  void _setOriginalVerb(Verb verb) {
+    _originalTitleController.text = verb.original_title;
+    _originalFirstPersonController.text = verb.original_firstPerson;
+    _originalSecondPersonController.text = verb.original_secondPerson;
+    _originalThirdPersonController.text = verb.original_thirdPerson;
+    _originalFourthPersonController.text = verb.original_fourthPerson;
+    _originalFifthPersonController.text = verb.original_fifthPerson;
+    _originalSixthPersonController.text = verb.original_sixthPerson;
+
+    _translatedTitleController.text = verb.translated_title;
+    _translatedFirstPersonController.text = verb.translated_firstPerson;
+    _translatedSecondPersonController.text = verb.translated_secondPerson;
+    _translatedThirdPersonController.text = verb.translated_thirdPerson;
+    _translatedFourthPersonController.text = verb.translated_fourthPerson;
+    _translatedFifthPersonController.text = verb.translated_fifthPerson;
+    _translatedSixthPersonController.text = verb.translated_sixthPerson;
   }
 
   void _defineFocus(BuildContext context, FocusNode focusToGoTo) {

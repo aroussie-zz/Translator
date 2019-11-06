@@ -109,7 +109,7 @@ class _NotesListState extends State<NotesListPage> {
           children: <Widget>[
             IconButton(
                 icon: Icon(Icons.delete),
-                onPressed: () => _onDeleteClicked(context, verb)),
+                onPressed: () => _showDialog(context, verb)),
             IconButton(
                 icon: Icon(Icons.edit),
                 onPressed: () => _onEditIconClicked(context, verb))
@@ -154,11 +154,57 @@ class _NotesListState extends State<NotesListPage> {
         builder: (BuildContext context) => VerbPage(_VerbPageKey)));
   }
 
-  void _onDeleteClicked(BuildContext context, Verb verb) {}
+  void _onDeleteClicked(BuildContext context, Verb verb) async {
+    final databaseHelper = DatabaseHelper();
+    var result = await databaseHelper.deleteVerb(verb);
+
+    if (result != 0) {
+      final snackBar = SnackBar(
+          content: Text("Verb deleted", style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.green);
+      Scaffold.of(context).showSnackBar(snackBar);
+      _verbs.remove(verb);
+    } else {
+      final snackBar = SnackBar(
+          content: Text("Something wrong happened",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red);
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
+  }
 
   void _onEditIconClicked(BuildContext context, Verb verb) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => VerbPage(_VerbPageKey, verb)));
+  }
+
+  void _showDialog(BuildContext mainContext, Verb verb) {
+    showDialog(
+        context: mainContext,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Delete Verb"),
+            content: Text(
+                "Are you sure you want to delete the verb ${verb.original_title}?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                textColor: Colors.red,
+              ),
+              FlatButton(
+                child: Text("Delete"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _onDeleteClicked(mainContext, verb);
+                },
+                textColor: Theme.of(mainContext).primaryColor,
+              )
+            ],
+          );
+        });
   }
 
   ///Fetch verbs from the database

@@ -80,14 +80,14 @@ class Verb{
     map['originalSecondPerson'] = original_secondPerson;
     map['originalThirdPerson'] = original_thirdPerson;
     map['originalFourthPerson'] = original_fourthPerson;
-    map['originalFifthPerson'] = translated_fifthPerson;
-    map['originalSixthPerson'] = translated_sixthPerson;
+    map['originalFifthPerson'] = original_fifthPerson;
+    map['originalSixthPerson'] = original_sixthPerson;
     map['translatedTitle'] = translated_title;
     map['translatedFirstPerson'] = translated_firstPerson;
     map['translatedSecondPerson'] = translated_secondPerson;
     map['translatedThirdPerson'] = translated_thirdPerson;
     map['translatedFourthPerson'] = translated_fourthPerson;
-    map['translatedFifthPerson'] = translated_firstPerson;
+    map['translatedFifthPerson'] = translated_fifthPerson;
     map['translatedSixthPerson'] = translated_sixthPerson;
 
     return map;

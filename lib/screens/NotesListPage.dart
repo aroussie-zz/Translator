@@ -32,6 +32,7 @@ class _NotesListState extends State<NotesListPage> {
             _tableIconsHeight) /
         2.2;
 
+    //TODO: Look for using a Staggered Grid view instead: https://pub.dev/packages/flutter_staggered_grid_view
     return Scaffold(
       appBar: AppBar(title: Text("My Notes")),
       body: SafeArea(
@@ -163,7 +164,8 @@ class _NotesListState extends State<NotesListPage> {
           content: Text("Verb deleted", style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.green);
       Scaffold.of(context).showSnackBar(snackBar);
-      _verbs.remove(verb);
+      //TODO: Look to use Provider to do that instead of refreshing the entire screen?
+      setState(() {});
     } else {
       final snackBar = SnackBar(
           content: Text("Something wrong happened",

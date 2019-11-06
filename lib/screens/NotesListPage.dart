@@ -19,6 +19,8 @@ class _NotesListState extends State<NotesListPage> {
   var _tableIconsHeight = 40;
   List<Verb> _verbs = [];
 
+  var _VerbPageKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -50,7 +52,7 @@ class _NotesListState extends State<NotesListPage> {
                           children: _verbs.map((Verb verb) {
                             return new Column(
                               children: <Widget>[
-                                _buildIconsRow(),
+                                _buildIconsRow(context, verb),
                                 Table(
                                   border: TableBorder.all(
                                       color: Colors.black, width: 1.0),
@@ -90,24 +92,28 @@ class _NotesListState extends State<NotesListPage> {
     );
   }
 
-  Widget _buildIconsRow() {
+  Widget _buildIconsRow(BuildContext context, Verb verb) {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
         height: 40,
-        width: 82,
+        width: 100,
         decoration: BoxDecoration(
             border: BorderDirectional(
                 top: BorderSide(color: Colors.black, width: 1),
                 start: BorderSide(color: Colors.black, width: 1),
                 end: BorderSide(color: Colors.black, width: 1))),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[Icon(Icons.delete), Icon(Icons.edit)],
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _onDeleteClicked(context, verb)),
+            IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => _onEditIconClicked(context, verb))
+          ],
         ),
       ),
     );
@@ -144,8 +150,15 @@ class _NotesListState extends State<NotesListPage> {
   }
 
   void _onAddButtonClicked(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => VerbPage(_VerbPageKey)));
+  }
+
+  void _onDeleteClicked(BuildContext context, Verb verb) {}
+
+  void _onEditIconClicked(BuildContext context, Verb verb) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => VerbPage(_VerbPageKey, verb)));
   }
 
   ///Fetch verbs from the database

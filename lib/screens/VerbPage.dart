@@ -4,6 +4,10 @@ import 'package:myTranslator/models/Verb.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 class VerbPage extends StatefulWidget {
+  final Verb originalVerb;
+
+  VerbPage(Key key, [this.originalVerb]) : super(key: key);
+
   @override
   _VerbState createState() {
     return _VerbState();
@@ -79,6 +83,10 @@ class _VerbState extends State<VerbPage> {
     _translatedFifthPersonFocus = FocusNode();
     _translatedSixthPersonFocus = FocusNode();
 
+    if (widget.originalVerb != null) {
+      _setOriginalVerb(widget.originalVerb);
+    }
+
     _listOriginalControllers = [
       _originalFirstPersonController,
       _originalSecondPersonController,
@@ -119,7 +127,9 @@ class _VerbState extends State<VerbPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Add a Verb")),
+        appBar: AppBar(
+            title: Text(
+                widget.originalVerb == null ? "Add Verb" : "Edit Verb")),
         body: SafeArea(
           child: SingleChildScrollView(
               child: Padding(
@@ -153,6 +163,24 @@ class _VerbState extends State<VerbPage> {
             ]),
           )),
         ));
+  }
+
+  void _setOriginalVerb(Verb verb) {
+    _originalTitleController.text = verb.original_title;
+    _originalFirstPersonController.text = verb.original_firstPerson;
+    _originalSecondPersonController.text = verb.original_secondPerson;
+    _originalThirdPersonController.text = verb.original_thirdPerson;
+    _originalFourthPersonController.text = verb.original_fourthPerson;
+    _originalFifthPersonController.text = verb.original_fifthPerson;
+    _originalSixthPersonController.text = verb.original_sixthPerson;
+
+    _translatedTitleController.text = verb.translated_title;
+    _translatedFirstPersonController.text = verb.translated_firstPerson;
+    _translatedSecondPersonController.text = verb.translated_secondPerson;
+    _translatedThirdPersonController.text = verb.translated_thirdPerson;
+    _translatedFourthPersonController.text = verb.translated_fourthPerson;
+    _translatedFifthPersonController.text = verb.translated_fifthPerson;
+    _translatedSixthPersonController.text = verb.translated_sixthPerson;
   }
 
   TableRow _buildTableRow(BuildContext context, int position) {
@@ -250,7 +278,6 @@ class _VerbState extends State<VerbPage> {
 
   /// Save the verb within the Database
   void _saveVerb() async {
-
     var verb = Verb.forDatabase(
       original_title: _originalTitleController.text,
       original_firstPerson: _originalFirstPersonController.text,
@@ -272,7 +299,6 @@ class _VerbState extends State<VerbPage> {
     int result = await databaseHelper.saveVerb(verb);
 
     //TODO Display a SnackBar when success?
-
   }
 
   void _defineFocus(BuildContext context, FocusNode focusToGoTo) {

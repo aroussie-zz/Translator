@@ -82,6 +82,12 @@ class DatabaseHelper {
       return Verb.fromDatabase(json: results[index]);
     });
   }
+
+  Future<int> editVerb(Verb verb) async{
+    Database db = await this.database;
+    var results = db.update(verbTable, verb.toMap(), where: "id = ?", whereArgs: [verb.id]);
+    return results;
+  }
   
   Future<int> saveTranslation(Translation translation) async{
     Database db = await this.database;

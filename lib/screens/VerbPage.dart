@@ -128,8 +128,8 @@ class _VerbState extends State<VerbPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text(
-                widget.originalVerb == null ? "Add Verb" : "Edit Verb")),
+            title:
+                Text(widget.originalVerb == null ? "Add Verb" : "Edit Verb")),
         body: SafeArea(
           child: SingleChildScrollView(
               child: Padding(
@@ -152,10 +152,12 @@ class _VerbState extends State<VerbPage> {
                     alignment: Alignment.bottomRight,
                     child: RaisedButton.icon(
                       icon: Icon(Icons.save),
-                      label: Text("SAVE"),
+                      label:
+                          Text(widget.originalVerb == null ? "SAVE" : "UPDATE"),
                       textColor: Colors.white,
                       color: Colors.green,
-                      onPressed: _validateData() ? () => _saveVerb() : null,
+                      onPressed:
+                          _validateData() ? () => _onSavedClicked(context) : null,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(4))),
                     )),
@@ -277,8 +279,9 @@ class _VerbState extends State<VerbPage> {
   }
 
   /// Save the verb within the Database
-  void _saveVerb() async {
-    var verb = Verb.forDatabase(
+  void _onSavedClicked(BuildContext context) async {
+    var verb = Verb(
+      id: widget.originalVerb != null ? widget.originalVerb.id : null,
       original_title: _originalTitleController.text,
       original_firstPerson: _originalFirstPersonController.text,
       original_secondPerson: _originalSecondPersonController.text,
@@ -296,9 +299,27 @@ class _VerbState extends State<VerbPage> {
     );
 
     var databaseHelper = DatabaseHelper();
-    int result = await databaseHelper.saveVerb(verb);
+    int result = widget.originalVerb == null
+        ? await databaseHelper.saveVerb(verb)
+        : await databaseHelper.editVerb(verb);
 
-    //TODO Display a SnackBar when success?
+    // Display a Snackbar to inform user of success or failure
+    if (result != 0) {
+      final snackBar = SnackBar(
+          content: Text(
+              widget.originalVerb == null
+                  ? "Verb successfully saved"
+                  : "Verb updated",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.green);
+      Scaffold.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+          content: Text("Something wrong happened",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red);
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 
   void _defineFocus(BuildContext context, FocusNode focusToGoTo) {

@@ -41,11 +41,11 @@ class Verb{
     translated_sixthPerson = "Ils/Elles sont";
   }
 
-  Verb.forDatabase({
-    this.original_title, this.original_firstPerson, this.original_secondPerson, this.original_thirdPerson,
-    this.original_fourthPerson, this.original_fifthPerson, this.original_sixthPerson,
-    this.translated_title, this.translated_firstPerson, this.translated_secondPerson, this.translated_thirdPerson,
-    this.translated_fourthPerson, this.translated_fifthPerson, this.translated_sixthPerson});
+//  Verb.forDatabase({this.id
+//    this.original_title, this.original_firstPerson, this.original_secondPerson, this.original_thirdPerson,
+//    this.original_fourthPerson, this.original_fifthPerson, this.original_sixthPerson,
+//    this.translated_title, this.translated_firstPerson, this.translated_secondPerson, this.translated_thirdPerson,
+//    this.translated_fourthPerson, this.translated_fifthPerson, this.translated_sixthPerson});
 
   Verb.fromDatabase({Map<String, dynamic> json}) {
     this.id = json['id'];
@@ -73,7 +73,6 @@ class Verb{
     var map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
-      print("ID WAS NOT NULL BUT WAS $id");
     }
 
     map['originalTitle'] = original_title;

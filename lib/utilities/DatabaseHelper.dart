@@ -69,6 +69,8 @@ class DatabaseHelper {
         "translatedSixthPerson TEXT)");
   }
 
+  // VERB LOGIC
+
   Future<int> saveVerb(Verb verb) async{
     Database db = await this.database;
     var results = db.insert(verbTable, verb.toMap());
@@ -82,7 +84,21 @@ class DatabaseHelper {
       return Verb.fromDatabase(json: results[index]);
     });
   }
-  
+
+  Future<int> editVerb(Verb verb) async{
+    Database db = await this.database;
+    var results = db.update(verbTable, verb.toMap(), where: "id = ?", whereArgs: [verb.id]);
+    return results;
+  }
+
+  Future<int> deleteVerb(Verb verb) async {
+    Database db = await this.database;
+    var result = db.delete(verbTable, where: 'id = ?', whereArgs: [verb.id]);
+    return result;
+  }
+
+  // TRANSLATION LOGIC
+
   Future<int> saveTranslation(Translation translation) async{
     Database db = await this.database;
     var results = db.insert(translationTable, translation.toMap());

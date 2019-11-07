@@ -41,11 +41,11 @@ class Verb{
     translated_sixthPerson = "Ils/Elles sont";
   }
 
-  Verb.forDatabase({
-    this.original_title, this.original_firstPerson, this.original_secondPerson, this.original_thirdPerson,
-    this.original_fourthPerson, this.original_fifthPerson, this.original_sixthPerson,
-    this.translated_title, this.translated_firstPerson, this.translated_secondPerson, this.translated_thirdPerson,
-    this.translated_fourthPerson, this.translated_fifthPerson, this.translated_sixthPerson});
+//  Verb.forDatabase({this.id
+//    this.original_title, this.original_firstPerson, this.original_secondPerson, this.original_thirdPerson,
+//    this.original_fourthPerson, this.original_fifthPerson, this.original_sixthPerson,
+//    this.translated_title, this.translated_firstPerson, this.translated_secondPerson, this.translated_thirdPerson,
+//    this.translated_fourthPerson, this.translated_fifthPerson, this.translated_sixthPerson});
 
   Verb.fromDatabase({Map<String, dynamic> json}) {
     this.id = json['id'];
@@ -73,7 +73,6 @@ class Verb{
     var map = Map<String, dynamic>();
     if (id != null) {
       map['id'] = id;
-      print("ID WAS NOT NULL BUT WAS $id");
     }
 
     map['originalTitle'] = original_title;
@@ -81,14 +80,14 @@ class Verb{
     map['originalSecondPerson'] = original_secondPerson;
     map['originalThirdPerson'] = original_thirdPerson;
     map['originalFourthPerson'] = original_fourthPerson;
-    map['originalFifthPerson'] = translated_fifthPerson;
-    map['originalSixthPerson'] = translated_sixthPerson;
+    map['originalFifthPerson'] = original_fifthPerson;
+    map['originalSixthPerson'] = original_sixthPerson;
     map['translatedTitle'] = translated_title;
     map['translatedFirstPerson'] = translated_firstPerson;
     map['translatedSecondPerson'] = translated_secondPerson;
     map['translatedThirdPerson'] = translated_thirdPerson;
     map['translatedFourthPerson'] = translated_fourthPerson;
-    map['translatedFifthPerson'] = translated_firstPerson;
+    map['translatedFifthPerson'] = translated_fifthPerson;
     map['translatedSixthPerson'] = translated_sixthPerson;
 
     return map;

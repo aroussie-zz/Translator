@@ -16,17 +16,23 @@ class _NotesListState extends State<NotesListPage> {
   var _verbTitleTextStyle =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   var _verbTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
-
+  var _tableIconsHeight = 40;
   List<Verb> _verbs = [];
+
+  var _VerbPageKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
 
     var tableWidth = size.width;
-    var tableHeight =
-        (size.height - kBottomNavigationBarHeight - kToolbarHeight) / 2.2;
+    var tableHeight = (size.height -
+            kBottomNavigationBarHeight -
+            kToolbarHeight +
+            _tableIconsHeight) /
+        2.2;
 
+    //TODO: Look for using a Staggered Grid view instead: https://pub.dev/packages/flutter_staggered_grid_view
     return Scaffold(
       appBar: AppBar(title: Text("My Notes")),
       body: SafeArea(
@@ -45,24 +51,29 @@ class _NotesListState extends State<NotesListPage> {
                           crossAxisCount: 1,
                           childAspectRatio: tableWidth / tableHeight,
                           children: _verbs.map((Verb verb) {
-                            return new Table(
-                              border: TableBorder.all(
-                                  color: Colors.black, width: 1.0),
-                              children: [
-                                _buildTableRowTitle(
-                                    verb.original_title, verb.translated_title),
-                                _buildTableRow(verb.original_firstPerson,
-                                    verb.translated_firstPerson),
-                                _buildTableRow(verb.original_secondPerson,
-                                    verb.translated_secondPerson),
-                                _buildTableRow(verb.original_thirdPerson,
-                                    verb.translated_thirdPerson),
-                                _buildTableRow(verb.original_fourthPerson,
-                                    verb.translated_fourthPerson),
-                                _buildTableRow(verb.original_fifthPerson,
-                                    verb.translated_fifthPerson),
-                                _buildTableRow(verb.original_sixthPerson,
-                                    verb.translated_sixthPerson)
+                            return new Column(
+                              children: <Widget>[
+                                _buildIconsRow(context, verb),
+                                Table(
+                                  border: TableBorder.all(
+                                      color: Colors.black, width: 1.0),
+                                  children: [
+                                    _buildTableRowTitle(verb.original_title,
+                                        verb.translated_title),
+                                    _buildTableRow(verb.original_firstPerson,
+                                        verb.translated_firstPerson),
+                                    _buildTableRow(verb.original_secondPerson,
+                                        verb.translated_secondPerson),
+                                    _buildTableRow(verb.original_thirdPerson,
+                                        verb.translated_thirdPerson),
+                                    _buildTableRow(verb.original_fourthPerson,
+                                        verb.translated_fourthPerson),
+                                    _buildTableRow(verb.original_fifthPerson,
+                                        verb.translated_fifthPerson),
+                                    _buildTableRow(verb.original_sixthPerson,
+                                        verb.translated_sixthPerson)
+                                  ],
+                                )
                               ],
                             );
                           }).toList(),
@@ -78,6 +89,33 @@ class _NotesListState extends State<NotesListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onAddButtonClicked(context),
         child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildIconsRow(BuildContext context, Verb verb) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        height: 40,
+        width: 100,
+        decoration: BoxDecoration(
+            border: BorderDirectional(
+                top: BorderSide(color: Colors.black, width: 1),
+                start: BorderSide(color: Colors.black, width: 1),
+                end: BorderSide(color: Colors.black, width: 1))),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _showDialog(context, verb)),
+            IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => _onEditIconClicked(context, verb))
+          ],
+        ),
       ),
     );
   }
@@ -113,8 +151,62 @@ class _NotesListState extends State<NotesListPage> {
   }
 
   void _onAddButtonClicked(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => VerbPage()));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => VerbPage(_VerbPageKey)));
+  }
+
+  void _onDeleteClicked(BuildContext context, Verb verb) async {
+    final databaseHelper = DatabaseHelper();
+    var result = await databaseHelper.deleteVerb(verb);
+
+    if (result != 0) {
+      final snackBar = SnackBar(
+          content: Text("Verb deleted", style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.green);
+      Scaffold.of(context).showSnackBar(snackBar);
+      //TODO: Look to use Provider to do that instead of refreshing the entire screen?
+      setState(() {});
+    } else {
+      final snackBar = SnackBar(
+          content: Text("Something wrong happened",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red);
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  void _onEditIconClicked(BuildContext context, Verb verb) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => VerbPage(_VerbPageKey, verb)));
+  }
+
+  void _showDialog(BuildContext mainContext, Verb verb) {
+    showDialog(
+        context: mainContext,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Delete Verb"),
+            content: Text(
+                "Are you sure you want to delete the verb ${verb.original_title}?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                textColor: Colors.red,
+              ),
+              FlatButton(
+                child: Text("Delete"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _onDeleteClicked(mainContext, verb);
+                },
+                textColor: Theme.of(mainContext).primaryColor,
+              )
+            ],
+          );
+        });
   }
 
   ///Fetch verbs from the database

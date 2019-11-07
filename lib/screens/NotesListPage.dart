@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
@@ -16,23 +17,13 @@ class _NotesListState extends State<NotesListPage> {
   var _verbTitleTextStyle =
       TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   var _verbTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
-  var _tableIconsHeight = 40;
   List<Verb> _verbs = [];
 
   var _VerbPageKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
 
-    var tableWidth = size.width;
-    var tableHeight = (size.height -
-            kBottomNavigationBarHeight -
-            kToolbarHeight +
-            _tableIconsHeight) /
-        2.2;
-
-    //TODO: Look for using a Staggered Grid view instead: https://pub.dev/packages/flutter_staggered_grid_view
     return Scaffold(
       appBar: AppBar(title: Text("My Notes")),
       body: SafeArea(
@@ -45,12 +36,12 @@ class _NotesListState extends State<NotesListPage> {
               return _verbs == null
                   ? Center(child: CircularProgressIndicator())
                   : _verbs.isNotEmpty
-                      ? GridView.count(
-                          mainAxisSpacing: 0.0,
-                          crossAxisSpacing: 12.0,
+                      ? StaggeredGridView.countBuilder(
+                          mainAxisSpacing: 24.0,
                           crossAxisCount: 1,
-                          childAspectRatio: tableWidth / tableHeight,
-                          children: _verbs.map((Verb verb) {
+                          itemCount: _verbs.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            var verb = _verbs[index];
                             return new Column(
                               children: <Widget>[
                                 _buildIconsRow(context, verb),
@@ -76,7 +67,10 @@ class _NotesListState extends State<NotesListPage> {
                                 )
                               ],
                             );
-                          }).toList(),
+                          },
+                          staggeredTileBuilder: (int index) {
+                            return StaggeredTile.fit(2);
+                          },
                         )
                       : Center(
                           child: Text(

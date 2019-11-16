@@ -19,7 +19,7 @@ class _NotesListState extends State<NotesListPage> {
   var _verbTextStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.normal);
   List<Verb> _verbs = [];
 
-  var _VerbPageKey = GlobalKey();
+  var _verbPageKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +146,7 @@ class _NotesListState extends State<NotesListPage> {
 
   void _onAddButtonClicked(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => VerbPage(_VerbPageKey)));
+        builder: (BuildContext context) => VerbPage(_verbPageKey)));
   }
 
   void _onDeleteClicked(BuildContext context, Verb verb) async {
@@ -171,7 +171,7 @@ class _NotesListState extends State<NotesListPage> {
 
   void _onEditIconClicked(BuildContext context, Verb verb) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => VerbPage(_VerbPageKey, verb)));
+        builder: (BuildContext context) => VerbPage(_verbPageKey, verb)));
   }
 
   void _showDialog(BuildContext mainContext, Verb verb) {

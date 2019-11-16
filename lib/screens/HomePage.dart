@@ -3,6 +3,7 @@ import 'package:myTranslator/screens/TranslationListPage.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
 
 import 'NotesListPage.dart';
+import 'QuizListPage.dart';
 import 'TranslatePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,16 +40,16 @@ class _HomeState extends State<HomePage>{
         screen: TranslatePage()),
     TabDestination(
         position: 2,
-        title: 'Notes',
+        title: 'Verbs',
         icon: Icons.receipt,
         color: Colors.blue,
         screen: NotesListPage()),
     TabDestination(
         position: 3,
-        title: 'Quizz',
+        title: 'Quizzes',
         icon: Icons.school,
         color: Colors.blue,
-        screen: TranslatePage())
+        screen: QuizListPage())
   ];
 
   @override

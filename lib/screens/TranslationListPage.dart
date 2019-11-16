@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Translation.dart';
-import 'package:myTranslator/screens/TranslatePage.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -40,16 +39,10 @@ class _TranslationListState extends State<TranslationListPage> {
                           : Center(
                               child: Text(
                                   "You don't have any saved translations."
-                                  " Start translating sentences by pressing + at the bottom of the screen!",
+                                  "Use the Translate tab to save some",
                                   textAlign: TextAlign.center,
                                   textScaleFactor: 2));
-                })),
-        floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => TranslatePage()));
-            }));
+                })));
   }
 
   ///Build an item with animation that will be given by the AnimatedList

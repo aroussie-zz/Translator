@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Quiz.dart';
+import 'package:myTranslator/screens/QuizCreatePage.dart';
 
 import 'QuizPage.dart';
 
@@ -31,6 +32,6 @@ class _QuizListState extends State<QuizListPage> {
 
   void _onAddQuizClicked(BuildContext context) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => QuizPage(key: _key, quiz: _quiz,)));
+        .push(MaterialPageRoute(builder: (BuildContext context) => QuizCreatePage()));
   }
 }

@@ -14,6 +14,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
     return Scaffold(
         appBar: AppBar(title: Text("Create a Quiz")),
         body: SafeArea(
+            child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
@@ -47,45 +48,85 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                   ],
                 ),
               ),
-              ListView(
-                shrinkWrap: true,
+              Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Expanded(
-                            child: TextField(
-                          style: TextStyle(fontSize: 18),
-                          decoration: InputDecoration(
-                              hintText: "Answer 1", border: OutlineInputBorder()),
-                        )),
-                        Text("Right answer?"),
-                        Checkbox(value: false, onChanged: null)
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    title: Text("Answer1"),
-                    trailing: Checkbox(value: false, onChanged: null),
-                  ),
-                  ListTile(
-                    title: Text("Answer2"),
-                    trailing: Checkbox(value: false, onChanged: null),
-                  ),
-                  ListTile(
-                    title: Text("Answer3"),
-                    trailing: Checkbox(value: false, onChanged: null),
-                  ),
-                  ListTile(
-                    title: Text("Answer4"),
-                    trailing: Checkbox(value: false, onChanged: null),
-                  )
+                      padding: const EdgeInsets.all(8.0),
+                      child: QuizAnswerTile()),
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: QuizAnswerTile()),
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: QuizAnswerTile()),
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: QuizAnswerTile()),
+                  Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: QuizAnswerTile())
                 ],
               )
             ],
           ),
-        ));
+        )));
+  }
+}
+
+class QuizAnswerTile extends StatefulWidget {
+  @override
+  QuizAnswerTileState createState() {
+    return QuizAnswerTileState();
+  }
+}
+
+class QuizAnswerTileState extends State<QuizAnswerTile> {
+  bool _isCorrectAnswer;
+  TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _isCorrectAnswer = false;
+    _textController = TextEditingController();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Expanded(
+            child: TextField(
+          controller: _textController,
+          style: TextStyle(fontSize: 18),
+          decoration:
+              InputDecoration(hintText: "Answer", border: OutlineInputBorder()),
+        )),
+        IconButton(
+            icon: Icon(Icons.check),
+            color: _isCorrectAnswer == true ? Colors.green : Colors.grey,
+            onPressed: () {
+              if (!_isCorrectAnswer) {
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                    "${_textController.text} set as correct Answer",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                ));
+              }
+              setState(() {
+                _isCorrectAnswer = !_isCorrectAnswer;
+              });
+            })
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _textController.dispose();
   }
 }

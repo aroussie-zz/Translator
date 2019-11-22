@@ -40,7 +40,7 @@ class QuizAnswer {
   String answer;
   bool isRightAnswer;
 
-  QuizAnswer({this.answer, this.isRightAnswer});
+  QuizAnswer({this.answer = "", this.isRightAnswer = false});
 
 
 }

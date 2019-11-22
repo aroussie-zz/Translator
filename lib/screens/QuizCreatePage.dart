@@ -28,7 +28,16 @@ class QuizCreatePage extends StatefulWidget {
 }
 
 class _QuizCreatePageState extends State<QuizCreatePage> {
+
   QuizQuestionProvider get provider => widget.model;
+  TextEditingController _questionController;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _questionController = TextEditingController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +50,14 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                "Question 1",
+                "Question ${provider.currentQuestionIndex + 1}",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                controller: _questionController,
                 decoration: InputDecoration(
                     labelText: "Question", border: OutlineInputBorder()),
               ),
@@ -106,7 +116,17 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
 
   void _saveQuestion() {
     print("SAVE QUESTIONS!");
+    provider.saveQuestion(_questionController.text);
+    provider.goNextQuestion();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _questionController.dispose();
+  }
+
+
 }
 
 class QuizAnswerTile extends StatefulWidget {

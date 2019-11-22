@@ -4,14 +4,21 @@ import 'package:myTranslator/models/Quiz.dart';
 class QuizQuestionProvider extends ChangeNotifier {
   QuizQuestionProvider();
 
-  List<QuizAnswer> _answers = [
-    QuizAnswer(),
-    QuizAnswer(),
-    QuizAnswer(),
-    QuizAnswer(),
-  ];
-
+  int _currentIndex = 0;
+  List<QuizQuestion> _questions = [QuizQuestion.empty()];
   bool _questionIsValid = false;
+
+  List<QuizAnswer> get _answers => _questions[_currentIndex].answers;
+
+  List<QuizQuestion> get getQuizQuestions => _questions;
+
+  int get currentQuestionIndex => _currentIndex;
+
+  List<QuizAnswer> get getQuizAnswers => _answers;
+
+  bool get isQuestionValid => _questionIsValid;
+
+  int get totalQuestions => _questions.length;
 
   void addAnswer() {
     _answers.add(QuizAnswer());
@@ -63,7 +70,20 @@ class QuizQuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<QuizAnswer> get getQuizAnswers => _answers;
+  void saveQuestion(String questionTitle) {
+    QuizQuestion question = _questions[_currentIndex];
+    question = QuizQuestion(question: questionTitle, answers: _answers);
+    notifyListeners();
+  }
 
-  bool get isQuestionValid => _questionIsValid;
+  void goPreviousQuestion() {
+    _currentIndex--;
+    notifyListeners();
+  }
+
+  void goNextQuestion() {
+    _questions.add(QuizQuestion.empty());
+    _currentIndex++;
+    notifyListeners();
+  }
 }

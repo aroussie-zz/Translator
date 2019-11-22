@@ -32,6 +32,16 @@ class QuizQuestion {
 
   QuizQuestion({this.question, this.answers});
 
+  QuizQuestion.empty(){
+    this.question = "";
+    this.answers = [
+      QuizAnswer(),
+      QuizAnswer(),
+      QuizAnswer(),
+      QuizAnswer()
+    ];
+  }
+
 
 }
 

@@ -32,6 +32,6 @@ class _QuizListState extends State<QuizListPage> {
 
   void _onAddQuizClicked(BuildContext context) {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => QuizCreatePage()));
+        .push(MaterialPageRoute(builder: (BuildContext context) => QuizCreatePageBuilder()));
   }
 }

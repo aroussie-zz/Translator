@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:myTranslator/models/Quiz.dart';
+import 'package:myTranslator/providers/QuizQuestionProvider.dart';
+import 'package:provider/provider.dart';
+
+class QuizCreatePageBuilder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<QuizQuestionProvider>(
+        builder: (_) => QuizQuestionProvider(),
+        child: Consumer<QuizQuestionProvider>(
+          builder: (_, QuizQuestionProvider provider, __) =>
+              QuizCreatePage(model: provider),
+        ));
+  }
+}
 
 class QuizCreatePage extends StatefulWidget {
+  final QuizQuestionProvider model;
+
+  QuizCreatePage({Key key, @required this.model}) : super(key: key);
+
   @override
   _QuizCreatePageState createState() {
     return _QuizCreatePageState();
@@ -9,6 +28,8 @@ class QuizCreatePage extends StatefulWidget {
 }
 
 class _QuizCreatePageState extends State<QuizCreatePage> {
+  QuizQuestionProvider get provider => widget.model;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,8 +61,12 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                       alignment: Alignment.centerRight,
                       child: ButtonBar(
                         children: <Widget>[
-                          IconButton(icon: Icon(Icons.remove), onPressed: null),
-                          IconButton(icon: Icon(Icons.add), onPressed: null)
+                          IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () => provider.deleteAnswer()),
+                          IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () => provider.addAnswer())
                         ],
                       ),
                     ))
@@ -49,24 +74,30 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                 ),
               ),
               Column(
-                children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile()),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile()),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile()),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile()),
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile())
-                ],
-              )
+                  children: provider.getQuizAnswers.map((QuizAnswer answer) {
+                return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: QuizAnswerTile());
+              }).toList()
+
+//                <Widget>[
+//                  Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: QuizAnswerTile()),
+//                  Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: QuizAnswerTile()),
+//                  Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: QuizAnswerTile()),
+//                  Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: QuizAnswerTile()),
+//                  Padding(
+//                      padding: const EdgeInsets.all(8.0),
+//                      child: QuizAnswerTile())
+//                ],
+                  )
             ],
           ),
         )));
@@ -114,6 +145,7 @@ class QuizAnswerTileState extends State<QuizAnswerTile> {
                     style: TextStyle(color: Colors.white),
                   ),
                   backgroundColor: Colors.green,
+                  duration: Duration(seconds: 1),
                 ));
               }
               setState(() {

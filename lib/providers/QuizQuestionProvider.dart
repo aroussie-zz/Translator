@@ -7,18 +7,29 @@ class QuizQuestionProvider extends ChangeNotifier {
   int _currentIndex = 0;
   List<QuizQuestion> _questions = [QuizQuestion.empty()];
   bool _questionIsValid = false;
+  QuizQuestion _currentQuestion = QuizQuestion.empty();
 
-  List<QuizAnswer> get _answers => _questions[_currentIndex].answers;
+  List<QuizAnswer> get _answers => _currentQuestion.answers;
 
   List<QuizQuestion> get getQuizQuestions => _questions;
 
   int get currentQuestionIndex => _currentIndex;
 
-  List<QuizAnswer> get getQuizAnswers => _answers;
+  QuizQuestion get getQuizQuestion => _currentQuestion;
 
   bool get isQuestionValid => _questionIsValid;
 
   int get totalQuestions => _questions.length;
+
+  set _answers(List<QuizAnswer> newAnswers) {
+    _answers = newAnswers;
+  }
+
+  set index(int newIndex) {
+    _currentIndex = newIndex;
+    _answers = _questions[newIndex].answers;
+    notifyListeners();
+  }
 
   void addAnswer() {
     _answers.add(QuizAnswer());
@@ -77,13 +88,17 @@ class QuizQuestionProvider extends ChangeNotifier {
   }
 
   void goPreviousQuestion() {
-    _currentIndex--;
+    _currentIndex -= 1;
+    _currentQuestion = _questions[_currentIndex];
     notifyListeners();
   }
 
   void goNextQuestion() {
-    _questions.add(QuizQuestion.empty());
-    _currentIndex++;
+    if(_currentIndex == _questions.length - 1){
+      _questions.add(QuizQuestion.empty());
+    }
+    _currentIndex += 1;
+    _currentQuestion = _questions[_currentIndex];
     notifyListeners();
   }
 }

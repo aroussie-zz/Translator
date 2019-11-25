@@ -36,7 +36,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
   @override
   void initState() {
     super.initState();
-    _questionController = TextEditingController();
+    _questionController = TextEditingController(text: provider.getQuizQuestion.question);
   }
 
   @override
@@ -90,7 +90,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
             ),
             Column(
                 mainAxisSize: MainAxisSize.max,
-                children: provider.getQuizAnswers.map((QuizAnswer answer) {
+                children: provider.getQuizQuestion.answers.map((QuizAnswer answer) {
                   return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: QuizAnswerTile(answer: answer));
@@ -105,11 +105,12 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     color: provider.isQuestionValid == true
                         ? Colors.green
                         : Colors.grey,
-                    onPressed: provider.isQuestionValid == true
-                        ? () => _saveQuestion()
-                        : null),
+//                    onPressed: provider.isQuestionValid == true
+//                        ? () => _saveQuestion()
+//                        : null),
+                onPressed: () => _saveQuestion(),
               ),
-            )
+            ))
           ],
         ))));
   }
@@ -141,9 +142,10 @@ class QuizAnswerTile extends StatefulWidget {
 }
 
 class QuizAnswerTileState extends State<QuizAnswerTile> {
-  TextEditingController _textController;
 
   QuizAnswer get answer => widget.answer;
+  TextEditingController _textController;
+
 
   @override
   void initState() {

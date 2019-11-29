@@ -28,15 +28,17 @@ class QuizCreatePage extends StatefulWidget {
 }
 
 class _QuizCreatePageState extends State<QuizCreatePage> {
-
   QuizQuestionProvider get provider => widget.model;
   TextEditingController _questionController;
 
+  List<GlobalKey<QuizAnswerTileState>> _answersList = [];
 
   @override
   void initState() {
     super.initState();
-    _questionController = TextEditingController(text: provider.getQuizQuestion.question);
+    _questionController =
+        TextEditingController(text: provider.getQuizQuestion.question);
+    _answersList = [GlobalKey(), GlobalKey(), GlobalKey(), GlobalKey()];
   }
 
   @override
@@ -71,54 +73,100 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     "Answers:",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  Expanded(
-                      child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ButtonBar(
-                      children: <Widget>[
-                        IconButton(
-                            icon: Icon(Icons.remove),
-                            onPressed: () => provider.deleteAnswer()),
-                        IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () => provider.addAnswer())
-                      ],
-                    ),
-                  ))
+//                  Expanded(
+//                      child: Align(
+//                    alignment: Alignment.centerRight,
+//                    child: ButtonBar(
+//                      children: <Widget>[
+//                        IconButton(
+//                            icon: Icon(Icons.remove),
+//                            onPressed: () => provider.deleteAnswer()),
+//                        IconButton(
+//                            icon: Icon(Icons.add),
+//                            onPressed: () => provider.addAnswer())
+//                      ],
+//                    ),
+//                  ))
                 ],
               ),
             ),
             Column(
-                mainAxisSize: MainAxisSize.max,
-                children: provider.getQuizQuestion.answers.map((QuizAnswer answer) {
-                  return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: QuizAnswerTile(answer: answer));
-                }).toList()),
-            Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: RaisedButton.icon(
-                    icon: Icon(Icons.save),
-                    label: Text("Save question"),
-                    color: provider.isQuestionValid == true
-                        ? Colors.green
-                        : Colors.grey,
-//                    onPressed: provider.isQuestionValid == true
-//                        ? () => _saveQuestion()
-//                        : null),
-                onPressed: () => _saveQuestion(),
-              ),
-            ))
+              mainAxisSize: MainAxisSize.max,
+              children: provider.getQuizQuestion.answers
+                  .asMap()
+                  .map((int index, QuizAnswer answer) {
+                    QuizAnswerTile tile = QuizAnswerTile(
+                        key: _answersList[index], answer: answer);
+                    return MapEntry(
+                        index,
+                        Padding(
+                            padding: const EdgeInsets.all(8.0), child: tile));
+                  })
+                  .values
+                  .toList(),
+            ),
+            AnimatedCrossFade(
+                firstChild: _buildSaveQuestionButton(context),
+                secondChild: _buildSaveQuizQuestionButtons(context),
+                crossFadeState: provider.isQuestionSaved == true
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(milliseconds: 300))
           ],
         ))));
   }
 
-  void _saveQuestion() {
-    print("SAVE QUESTIONS!");
-    provider.saveQuestion(_questionController.text);
+  Widget _buildSaveQuestionButton(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: RaisedButton.icon(
+            icon: Icon(Icons.save),
+            label: Text("Save question"),
+            color:
+                provider.isQuestionValid == true ? Colors.green : Colors.grey,
+//                    onPressed: provider.isQuestionValid == true
+//                        ? () => _saveQuestion()
+//                        : null),
+            onPressed: () => provider.saveQuestion(_questionController.text),
+          ),
+        ));
+  }
+
+  Widget _buildSaveQuizQuestionButtons(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(top: 16.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton.icon(
+              icon: Icon(Icons.save),
+              label: Text("Save Quiz"),
+              color: Colors.blue,
+              onPressed: () => provider.saveQuiz(),
+            ),
+            RaisedButton.icon(
+              icon: Icon(Icons.save),
+              label: Text("Add a question"),
+              color: Colors.amber,
+              onPressed: () => _addAQuestion(),
+            ),
+          ],
+        ));
+  }
+
+  void _addAQuestion(){
+    _cleanQuestion();
     provider.goNextQuestion();
+  }
+
+  void _cleanQuestion() {
+    _questionController.clear();
+    _answersList.forEach((GlobalKey<QuizAnswerTileState> key) {
+      key.currentState.clear();
+    });
   }
 
   @override
@@ -126,8 +174,6 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
     super.dispose();
     _questionController.dispose();
   }
-
-
 }
 
 class QuizAnswerTile extends StatefulWidget {
@@ -142,10 +188,8 @@ class QuizAnswerTile extends StatefulWidget {
 }
 
 class QuizAnswerTileState extends State<QuizAnswerTile> {
-
   QuizAnswer get answer => widget.answer;
   TextEditingController _textController;
-
 
   @override
   void initState() {
@@ -186,6 +230,10 @@ class QuizAnswerTileState extends State<QuizAnswerTile> {
             })
       ],
     );
+  }
+
+  void clear() {
+    _textController.clear();
   }
 
   @override

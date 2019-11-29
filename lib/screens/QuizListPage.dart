@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/screens/QuizCreatePage.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
+
+import 'QuizPage.dart';
 
 class QuizListPage extends StatefulWidget {
   @override
@@ -24,24 +27,52 @@ class _QuizListState extends State<QuizListPage> {
               future: _fetchQuizzed(),
               builder: (context, snapshot) {
                 _quizzes = snapshot.data;
-                return _quizzes == null
-                    ? Center(child: CircularProgressIndicator())
-                    : _quizzes.isNotEmpty
-                        ? Center(
-                            child: Text("You have ${_quizzes.length} quizzes!"),
-                          )
-                        : Center(
-                            child: Text("No saved Quizzes"),
-                          );
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _quizzes == null
+                      ? Center(child: CircularProgressIndicator())
+                      : _quizzes.isNotEmpty
+                          ? StaggeredGridView.countBuilder(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 24.0,
+                              crossAxisSpacing: 8,
+                              itemCount: _quizzes.length,
+                              itemBuilder: (BuildContext context, int index) =>
+                                  _buildQuizCard(context, _quizzes[index]),
+                              staggeredTileBuilder: (int index) {
+                                return StaggeredTile.count(1, 1);
+                              })
+                          : Center(child: Text("No saved Quizzes")),
+                );
               })),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add), onPressed: () => _onAddQuizClicked(context)),
     );
   }
 
+  Widget _buildQuizCard(BuildContext context, Quiz quiz) {
+    return new GestureDetector(
+      onTap: () => _startQuiz(quiz),
+      child: Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+          side: BorderSide(color: Colors.black, width: 1)),
+      child: Center(
+          child: Text(
+        "${quiz.title}",
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
+      )),
+    ));
+  }
+
   void _onAddQuizClicked(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => QuizCreatePageBuilder()));
+  }
+
+  void _startQuiz(Quiz quiz){
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => QuizPage(quiz: quiz)));
   }
 
   Future<List<Quiz>> _fetchQuizzed() {

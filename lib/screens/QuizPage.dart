@@ -87,11 +87,10 @@ class QuizCardStackState extends State<QuizCardStack>
   @override
   void initState() {
     super.initState();
-    //TODO: SOmething is wrong with the currentIndex value
     currentIndex = 0;
     _quizCards = widget.cards;
     _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: 1));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _curvedAnimation =
         CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 

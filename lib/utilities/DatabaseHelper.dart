@@ -1,3 +1,4 @@
+import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:path/path.dart';
@@ -10,7 +11,7 @@ class DatabaseHelper {
 
   final String translationTable = "translation";
   final String verbTable = "verb";
-
+  final String quizTable = "quiz";
 
   DatabaseHelper._createInstance();
 
@@ -42,7 +43,6 @@ class DatabaseHelper {
 
   /// Create the different tables within the database
   void _createDatabase(Database database, int newVersion) async {
-
     //Create a table for the translations
     await database.execute("CREATE TABLE $translationTable("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -67,11 +67,16 @@ class DatabaseHelper {
         "translatedFourthPerson TEXT,"
         "translatedFifthPerson TEXT,"
         "translatedSixthPerson TEXT)");
+
+    await database.execute("CREATE TABLE $quizTable("
+    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    "title TEXT,"
+    "questions TEXT)");
   }
 
   // VERB LOGIC
 
-  Future<int> saveVerb(Verb verb) async{
+  Future<int> saveVerb(Verb verb) async {
     Database db = await this.database;
     var results = db.insert(verbTable, verb.toMap());
     return results;
@@ -85,9 +90,10 @@ class DatabaseHelper {
     });
   }
 
-  Future<int> editVerb(Verb verb) async{
+  Future<int> editVerb(Verb verb) async {
     Database db = await this.database;
-    var results = db.update(verbTable, verb.toMap(), where: "id = ?", whereArgs: [verb.id]);
+    var results = db
+        .update(verbTable, verb.toMap(), where: "id = ?", whereArgs: [verb.id]);
     return results;
   }
 
@@ -99,7 +105,7 @@ class DatabaseHelper {
 
   // TRANSLATION LOGIC
 
-  Future<int> saveTranslation(Translation translation) async{
+  Future<int> saveTranslation(Translation translation) async {
     Database db = await this.database;
     var results = db.insert(translationTable, translation.toMap());
     return results;
@@ -114,7 +120,20 @@ class DatabaseHelper {
     });
   }
 
+  // QUIZ LOGIC
 
+  Future<int> saveQuiz(Quiz quiz) async {
 
+    Database db = await this.database;
+    var results = db.insert(quizTable, quiz.toMap());
+    return results;
+  }
 
+  Future<List<Quiz>> fetchQuizzes() async {
+    Database db = await this.database;
+    var result = await db.query(quizTable);
+    return List.generate(result.length, (index) {
+      return Quiz.fromJson(result[index]);
+    });
+  }
 }

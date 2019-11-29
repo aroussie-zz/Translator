@@ -4,8 +4,6 @@ import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/screens/QuizCreatePage.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
-import 'QuizPage.dart';
-
 class QuizListPage extends StatefulWidget {
   @override
   _QuizListState createState() {
@@ -14,34 +12,40 @@ class QuizListPage extends StatefulWidget {
 }
 
 class _QuizListState extends State<QuizListPage> {
-
-  var _quiz = Quiz.dummy();
   final GlobalKey _key = GlobalKey();
+  List<Quiz> _quizzes;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("My Quizzes")),
       body: SafeArea(
-          child: Center(
-        child: Text("No saved Quizzes"),
-      )),
+          child: FutureBuilder(
+              future: _fetchQuizzed(),
+              builder: (context, snapshot) {
+                _quizzes = snapshot.data;
+                return _quizzes == null
+                    ? Center(child: CircularProgressIndicator())
+                    : _quizzes.isNotEmpty
+                        ? Center(
+                            child: Text("You have ${_quizzes.length} quizzes!"),
+                          )
+                        : Center(
+                            child: Text("No saved Quizzes"),
+                          );
+              })),
       floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add), onPressed: () =>
-          _onAddQuizClicked(context)
-//          _fetchQuizzed()
-      ),
+          child: Icon(Icons.add), onPressed: () => _onAddQuizClicked(context)),
     );
   }
 
   void _onAddQuizClicked(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) => QuizCreatePageBuilder()));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => QuizCreatePageBuilder()));
   }
 
-  void _fetchQuizzed() async{
+  Future<List<Quiz>> _fetchQuizzed() {
     DatabaseHelper databaseHelper = DatabaseHelper();
-    var quizzes = await databaseHelper.fetchQuizzes();
-    print("Quizzes fetched! $quizzes");
+    return databaseHelper.fetchQuizzes();
   }
 }

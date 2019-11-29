@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Quiz.dart';
+import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 class QuizQuestionProvider extends ChangeNotifier {
   QuizQuestionProvider();
 
   int _currentIndex = 0;
-  List<QuizQuestion> _questions = [QuizQuestion.empty()];
+  List<QuizQuestion> _questions = [];
   bool _questionIsValid = false;
   bool _questionIsSaved = false;
   QuizQuestion _currentQuestion = QuizQuestion.empty();
@@ -71,10 +72,10 @@ class QuizQuestionProvider extends ChangeNotifier {
   }
 
   void saveQuestion(String questionTitle) {
-    QuizQuestion question = _questions[_currentIndex];
-    question = QuizQuestion(question: questionTitle, answers: _answers);
+    _currentQuestion = QuizQuestion(question: questionTitle, answers: _answers);
     _questionIsValid = false;
     _questionIsSaved = true;
+    _questions.add(_currentQuestion);
     notifyListeners();
   }
 
@@ -85,16 +86,21 @@ class QuizQuestionProvider extends ChangeNotifier {
   }
 
   void goNextQuestion() {
-    if(_currentIndex == _questions.length - 1){
-      _questions.add(QuizQuestion.empty());
-    }
     _currentIndex += 1;
-    _currentQuestion = _questions[_currentIndex];
+    if(_currentIndex == _questions.length){
+      _currentQuestion = QuizQuestion.empty();
+    } else {
+      _currentQuestion = _questions[_currentIndex];
+    }
     _questionIsSaved = false;
     notifyListeners();
   }
 
   void saveQuiz(){
-
+    var databaseHelper = DatabaseHelper();
+    databaseHelper.saveQuiz(new Quiz(
+      title: "Quiz1",
+      questions: this._questions
+    ));
   }
 }

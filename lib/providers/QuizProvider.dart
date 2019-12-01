@@ -7,7 +7,11 @@ class QuizProvider extends ChangeNotifier {
   bool hasAnswered = false;
   final Quiz quiz;
 
+  int rightAnswersCount = 0;
+
   QuizProvider({this.quiz});
+
+  int get totalQuestions => quiz.questions.length;
 
   void updateQuizOver(bool isOver){
     isQuizOver = isOver;
@@ -16,6 +20,11 @@ class QuizProvider extends ChangeNotifier {
 
   void updateHasAnswered(bool didAnswer){
     hasAnswered = didAnswer;
+    notifyListeners();
+  }
+
+  void increaseRightAnswerCount(){
+    rightAnswersCount++;
     notifyListeners();
   }
 

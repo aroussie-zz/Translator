@@ -102,11 +102,35 @@ class _QuizPageState extends State<QuizPage> {
 
   Widget _buildLastScreen() {
     return Center(
-      child: Text(
-        "Quiz Done!",
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
-      ),
-    );
+        child: Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          "Quiz Done!",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 46),
+        ),
+        Text(
+          "Your score:",
+          style: TextStyle(fontSize: 36),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Text(
+              "${provider.rightAnswersCount}",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                  fontSize: 32),
+            ),
+            Text(" / ${provider.totalQuestions}",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32))
+          ],
+        )
+      ],
+    ));
   }
 }
 
@@ -301,6 +325,9 @@ class QuizCardState extends State<QuizCard> {
 
   void _onAnswerClicked(BuildContext context, int position) {
     Provider.of<QuizProvider>(context).updateHasAnswered(true);
+    if (_question.answers[position].isRightAnswer){
+      Provider.of<QuizProvider>(context).increaseRightAnswerCount();
+    }
     setState(() {
       _positionButtonClicked = position;
     });

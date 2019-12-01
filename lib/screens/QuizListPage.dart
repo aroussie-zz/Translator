@@ -72,7 +72,7 @@ class _QuizListState extends State<QuizListPage> {
 
   void _startQuiz(Quiz quiz){
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => QuizPage(quiz: quiz)));
+        builder: (BuildContext context) => QuizPageBuilder(quiz: quiz)));
   }
 
   Future<List<Quiz>> _fetchQuizzed() {

@@ -2,11 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myTranslator/models/Quiz.dart';
+import 'package:myTranslator/providers/QuizProvider.dart';
+import 'package:provider/provider.dart';
 
-class QuizPage extends StatefulWidget {
+class QuizPageBuilder extends StatelessWidget {
   final Quiz quiz;
 
-  QuizPage({Key key, @required this.quiz}) : super(key: key);
+  QuizPageBuilder({Key key, @required this.quiz}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<QuizProvider>(
+        builder: (_) => QuizProvider(quiz: quiz),
+        child: Consumer<QuizProvider>(
+          builder: (_, QuizProvider provider, __) => QuizPage(model: provider),
+        ));
+  }
+}
+
+class QuizPage extends StatefulWidget {
+  final QuizProvider model;
+
+  QuizPage({Key key, @required this.model}) : super(key: key);
 
   @override
   _QuizPageState createState() {
@@ -17,16 +34,20 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   Quiz _quiz;
 
+  QuizProvider get provider => widget.model;
+
   final _cardStackKey = GlobalKey<QuizCardStackState>();
   List<QuizCard> _questionCards;
+  bool _isQuizOver;
+  bool _hasAnswered = false;
 
   @override
   void initState() {
     super.initState();
-    _quiz = widget.quiz;
-
-    _questionCards = List.generate(widget.quiz.questions.length, (int index) {
-      return QuizCard(question: widget.quiz.questions[index], index: index);
+    _quiz = provider.quiz;
+    _isQuizOver = false;
+    _questionCards = List.generate(provider.quiz.questions.length, (int index) {
+      return QuizCard(question: provider.quiz.questions[index], index: index);
     });
   }
 
@@ -38,17 +59,19 @@ class _QuizPageState extends State<QuizPage> {
           child: Column(
         children: <Widget>[
           Expanded(
-              flex: 3, child: QuizCardStack(_cardStackKey, _questionCards)),
+              flex: 3,
+              child: provider.isQuizOver != true
+                  ? QuizCardStack(_cardStackKey, _questionCards)
+                  : _buildLastScreen()),
           Expanded(
             child: Center(
-              child: RaisedButton(
-                child: Text("Next"),
-//                onPressed: _hasAnswered == true ? () => _onNextClicked() : null,
-                onPressed: () => _onNextClicked(),
-                color: Colors.green,
-                textColor: Colors.white,
-              ),
-            ),
+                child: AnimatedCrossFade(
+                    firstChild: _buildNextButton(context),
+                    secondChild: _buildDoneButton(context),
+                    crossFadeState: provider.isQuizOver
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: Duration(milliseconds: 300))),
             flex: 1,
           )
         ],
@@ -56,9 +79,44 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  void _onNextClicked() {
+  Widget _buildNextButton(BuildContext context) {
+    return RaisedButton(
+      child: Text("Next"),
+      onPressed:
+          provider.hasAnswered == true ? () => _onNextClicked(context) : null,
+//                onPressed: () => _onNextClicked(),
+      color: Colors.green,
+      textColor: Colors.white,
+    );
+  }
+
+  Widget _buildDoneButton(BuildContext context) {
+    return RaisedButton(
+      child: Text("Back to my Quizzes"),
+      onPressed: () => Navigator.of(context).pop(),
+      color: Theme.of(context).primaryColor,
+      textColor: Colors.white,
+    );
+  }
+
+  void _onNextClicked(BuildContext context) {
     //Go to next question
-    _cardStackKey.currentState.animateToNextCard();
+    _cardStackKey.currentState.animateToNextCard(context);
+  }
+
+  Widget _buildLastScreen() {
+    return Center(
+      child: Text(
+        "Quiz Done!",
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
+      ),
+    );
+  }
+
+  void animationIsDone(bool isCardListEmpty) {
+    setState(() {
+      _isQuizOver = isCardListEmpty;
+    });
   }
 }
 
@@ -66,7 +124,8 @@ class QuizCardStack extends StatefulWidget {
   final List<QuizCard> cards;
   final Function animationDoneCallback;
 
-  QuizCardStack(Key key, this.cards, [this.animationDoneCallback]) : super(key: key);
+  QuizCardStack(Key key, this.cards, [this.animationDoneCallback])
+      : super(key: key);
 
   @override
   QuizCardStackState createState() {
@@ -103,20 +162,22 @@ class QuizCardStackState extends State<QuizCardStack>
 
   @override
   Widget build(BuildContext context) {
-
-    var reversedList = _quizCards.reversed.toList();
-
     return Stack(
         fit: StackFit.expand,
         overflow: Overflow.visible,
-        children: reversedList.map<Widget>((QuizCard card) {
-          return Center(
-              child: Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
-                  child: Transform.translate(
-                      offset: _getTranslateTransformationOffset(card),
-                      child: card)));
-        }).toList());
+        children: _buildQuizCardsToDisplay(_quizCards));
+  }
+
+  List<Widget> _buildQuizCardsToDisplay(List<QuizCard> cards) {
+    var reversedList = cards.reversed.toList();
+    return reversedList.map<Widget>((QuizCard card) {
+      return Center(
+          child: Padding(
+              padding: const EdgeInsets.only(left: 16, top: 16, right: 16),
+              child: Transform.translate(
+                  offset: _getTranslateTransformationOffset(card),
+                  child: card)));
+    }).toList();
   }
 
   /// Translate the card to the left out of the screen
@@ -128,14 +189,17 @@ class QuizCardStackState extends State<QuizCardStack>
     return Offset(0, 0);
   }
 
-  void animateToNextCard() {
+  void animateToNextCard(BuildContext context) {
+    Provider.of<QuizProvider>(context).updateHasAnswered(false);
     _controller.forward().whenComplete(() {
       setState(() {
         _controller.reset();
         QuizCard removedCard = _quizCards[0];
         _quizCards.remove(removedCard);
-        if(_quizCards.isNotEmpty){
+        if (_quizCards.isNotEmpty) {
           currentIndex = _quizCards[0].index;
+        } else {
+          Provider.of<QuizProvider>(context).updateQuizOver(true);
         }
         if (widget.animationDoneCallback != null) {
           widget.animationDoneCallback(_quizCards.isEmpty);
@@ -159,19 +223,19 @@ class QuizCard extends StatefulWidget {
 
 class QuizCardState extends State<QuizCard> {
   QuizQuestion _question;
-  bool _hasAnswered;
   int _positionButtonClicked;
 
   @override
   void initState() {
     super.initState();
     _question = widget.question;
-    _hasAnswered = false;
     _positionButtonClicked = -1;
   }
 
   @override
   Widget build(BuildContext context) {
+    var hasAnswered = Provider.of<QuizProvider>(context).hasAnswered;
+
     return SafeArea(
         child: Card(
             shape: RoundedRectangleBorder(
@@ -196,7 +260,7 @@ class QuizCardState extends State<QuizCard> {
                     itemBuilder: (BuildContext context, int index) {
                       return AnimatedOpacity(
                           duration: Duration(milliseconds: 500),
-                          opacity: _hasAnswered == true
+                          opacity: hasAnswered == true
                               //it's the question is answered, then only keep the right answer
                               //And where the user clicked
                               ? _question.answers[index].isRightAnswer == true
@@ -205,8 +269,8 @@ class QuizCardState extends State<QuizCard> {
                               : 1,
                           child: RaisedButton(
                             child: Text(_question.answers[index].answer),
-                            onPressed: () => _onAnswerClicked(index),
-                            color: _hasAnswered
+                            onPressed: () => _onAnswerClicked(context, index),
+                            color: hasAnswered
                                 ? _question.answers[index].isRightAnswer == true
                                     ? Colors.green
                                     : index == _positionButtonClicked
@@ -225,7 +289,7 @@ class QuizCardState extends State<QuizCard> {
                 ),
                 Expanded(
                   child: AnimatedOpacity(
-                      opacity: _hasAnswered == true ? 1 : 0,
+                      opacity: hasAnswered == true ? 1 : 0,
                       duration: Duration(milliseconds: 500),
                       child: Center(
                         child: Text(
@@ -245,9 +309,9 @@ class QuizCardState extends State<QuizCard> {
             )));
   }
 
-  void _onAnswerClicked(int position) {
+  void _onAnswerClicked(BuildContext context, int position) {
+    Provider.of<QuizProvider>(context).updateHasAnswered(true);
     setState(() {
-      _hasAnswered = true;
       _positionButtonClicked = position;
     });
   }

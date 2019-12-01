@@ -38,14 +38,11 @@ class _QuizPageState extends State<QuizPage> {
 
   final _cardStackKey = GlobalKey<QuizCardStackState>();
   List<QuizCard> _questionCards;
-  bool _isQuizOver;
-  bool _hasAnswered = false;
 
   @override
   void initState() {
     super.initState();
     _quiz = provider.quiz;
-    _isQuizOver = false;
     _questionCards = List.generate(provider.quiz.questions.length, (int index) {
       return QuizCard(question: provider.quiz.questions[index], index: index);
     });
@@ -84,7 +81,6 @@ class _QuizPageState extends State<QuizPage> {
       child: Text("Next"),
       onPressed:
           provider.hasAnswered == true ? () => _onNextClicked(context) : null,
-//                onPressed: () => _onNextClicked(),
       color: Colors.green,
       textColor: Colors.white,
     );
@@ -111,12 +107,6 @@ class _QuizPageState extends State<QuizPage> {
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
       ),
     );
-  }
-
-  void animationIsDone(bool isCardListEmpty) {
-    setState(() {
-      _isQuizOver = isCardListEmpty;
-    });
   }
 }
 
@@ -268,16 +258,16 @@ class QuizCardState extends State<QuizCard> {
                                   : index == _positionButtonClicked ? 1 : 0
                               : 1,
                           child: RaisedButton(
-                            child: Text(_question.answers[index].answer),
-                            onPressed: () => _onAnswerClicked(context, index),
-                            color: hasAnswered
-                                ? _question.answers[index].isRightAnswer == true
-                                    ? Colors.green
-                                    : index == _positionButtonClicked
-                                        ? Colors.red
-                                        : Colors.white30
-                                : Colors.white30,
-                          ));
+                              child: Text(_question.answers[index].answer),
+                              onPressed: () => _onAnswerClicked(context, index),
+                              color: hasAnswered
+                                  ? _question.answers[index].isRightAnswer ==
+                                          true
+                                      ? Colors.green
+                                      : index == _positionButtonClicked
+                                          ? Colors.red
+                                          : Colors.grey
+                                  : Colors.grey));
                     },
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,

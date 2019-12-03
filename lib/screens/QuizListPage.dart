@@ -34,7 +34,7 @@ class _QuizListState extends State<QuizListPage> {
                       : _quizzes.isNotEmpty
                           ? StaggeredGridView.countBuilder(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 24.0,
+                              mainAxisSpacing: 8.0,
                               crossAxisSpacing: 8,
                               itemCount: _quizzes.length,
                               itemBuilder: (BuildContext context, int index) =>
@@ -52,17 +52,27 @@ class _QuizListState extends State<QuizListPage> {
 
   Widget _buildQuizCard(BuildContext context, Quiz quiz) {
     return new GestureDetector(
-      onTap: () => _startQuiz(quiz),
-      child: Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-          side: BorderSide(color: Colors.black, width: 1)),
-      child: Center(
-          child: Text(
-        "${quiz.title}",
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
-      )),
-    ));
+        onTap: () => _startQuiz(quiz),
+        child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                side: BorderSide(color: Colors.black, width: 1)),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Center(
+                    child: Text(
+                  "${quiz.title}",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+                )),
+                Center(
+                    child: Text(
+                  "${quiz.questions.length} questions",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21),
+                ))
+              ],
+            )));
   }
 
   void _onAddQuizClicked(BuildContext context) {
@@ -70,7 +80,7 @@ class _QuizListState extends State<QuizListPage> {
         builder: (BuildContext context) => QuizCreatePageBuilder()));
   }
 
-  void _startQuiz(Quiz quiz){
+  void _startQuiz(Quiz quiz) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => QuizPageBuilder(quiz: quiz)));
   }

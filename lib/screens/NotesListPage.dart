@@ -25,7 +25,7 @@ class _NotesListState extends State<NotesListPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(title: Text("My Notes")),
+      appBar: AppBar(title: Text("My Verbs")),
       body: SafeArea(
           child: Padding(
         padding: const EdgeInsets.all(8.0),

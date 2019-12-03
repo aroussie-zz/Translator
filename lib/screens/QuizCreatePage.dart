@@ -73,20 +73,6 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     "Answers:",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-//                  Expanded(
-//                      child: Align(
-//                    alignment: Alignment.centerRight,
-//                    child: ButtonBar(
-//                      children: <Widget>[
-//                        IconButton(
-//                            icon: Icon(Icons.remove),
-//                            onPressed: () => provider.deleteAnswer()),
-//                        IconButton(
-//                            icon: Icon(Icons.add),
-//                            onPressed: () => provider.addAnswer())
-//                      ],
-//                    ),
-//                  ))
                 ],
               ),
             ),
@@ -118,20 +104,18 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
 
   Widget _buildSaveQuestionButton(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(top: 16.0),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: RaisedButton.icon(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: RaisedButton.icon(
             icon: Icon(Icons.save),
             label: Text("Save question"),
-            color:
-                provider.isQuestionValid == true ? Colors.green : Colors.grey,
-//                    onPressed: provider.isQuestionValid == true
-//                        ? () => _saveQuestion()
-//                        : null),
-            onPressed: () => provider.saveQuestion(_questionController.text),
-          ),
-        ));
+            color: provider.isQuestionValid == true ? Colors.green : Colors.grey,
+            onPressed: provider.isQuestionValid == true
+                ? () => provider.saveQuestion(_questionController.text)
+                : null),
+      ),
+    );
   }
 
   Widget _buildSaveQuizQuestionButtons(BuildContext context) {
@@ -157,7 +141,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
         ));
   }
 
-  void _addAQuestion(){
+  void _addAQuestion() {
     _cleanQuestion();
     provider.goNextQuestion();
   }

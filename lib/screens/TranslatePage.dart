@@ -174,9 +174,7 @@ class _TranslatePageState extends State<TranslatePage> {
         ),
         RaisedButton(
             color: Colors.green,
-            onPressed: () {
-              _saveTranslationInDB();
-            },
+            onPressed: () => _saveTranslationInDB(),
             child: Row(children: <Widget>[
               Icon(Icons.save),
               Padding(
@@ -256,7 +254,8 @@ class _TranslatePageState extends State<TranslatePage> {
   void _saveTranslationInDB() async {
     var databaseHelper = DatabaseHelper();
 
-    //TODO: Uncomment this once everything is ready
+
+    //TODO: UNDO THIS ONCE I USE MY OWN ACCOUNT
 //    var translation = new Translation.forDatabase(
 //        originalSentence: _inputController.text,
 //        translatedSentence: _outputController.text,
@@ -264,6 +263,20 @@ class _TranslatePageState extends State<TranslatePage> {
 
     var translation = new Translation.dummy(new Random().nextInt(10));
 
-    databaseHelper.saveTranslation(translation);
+    int result = await databaseHelper.saveTranslation(translation);
+
+    if (result != 0) {
+      final snackBar = SnackBar(
+          content: Text("Translation added to the list",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.green);
+      Scaffold.of(context).showSnackBar(snackBar);
+    } else {
+      final snackBar = SnackBar(
+          content: Text("Something wrong happened",
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.red);
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 }

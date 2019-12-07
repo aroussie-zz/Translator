@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 //See https://medium.com/@abeythilakeudara3/to-do-list-in-flutter-with-sqlite-as-local-database-8b26ba2b060e
 class DatabaseHelper {
@@ -148,8 +151,16 @@ class DatabaseHelper {
   Future<List<Quiz>> fetchQuizzes() async {
     Database db = await this.database;
     var result = await db.query(quizTable);
+
+    if (result.isEmpty) {
+      var fileString = await rootBundle.loadString('assets/basic_verbs_quiz.json');
+      var quizJson = json.decode(fileString);
+      saveQuiz(Quiz.fromJson(quizJson));
+      return fetchQuizzes();
+    }
+
     return List.generate(result.length, (index) {
-      return Quiz.fromJson(result[index]);
+      return Quiz.fromDatabase(result[index]);
     });
   }
 }

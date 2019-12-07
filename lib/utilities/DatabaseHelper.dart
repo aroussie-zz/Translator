@@ -120,6 +120,12 @@ class DatabaseHelper {
     });
   }
 
+  Future<int> deleteTranslation(Translation translation) async {
+    Database db = await this.database;
+    var results = db.delete(translationTable, where: 'id = ?', whereArgs: [translation.id]);
+    return results;
+  }
+
   // QUIZ LOGIC
 
   Future<int> saveQuiz(Quiz quiz) async {

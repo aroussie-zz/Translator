@@ -33,12 +33,6 @@ class _HomeState extends State<HomePage>{
         color: Colors.blue,
         screen: TranslationListPage()),
     TabDestination(
-        position: 1,
-        title: 'Translate',
-        icon: Icons.translate,
-        color: Colors.blue,
-        screen: TranslatePage()),
-    TabDestination(
         position: 2,
         title: 'Verbs',
         icon: Icons.receipt,

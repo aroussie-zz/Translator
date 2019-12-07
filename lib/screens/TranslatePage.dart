@@ -42,11 +42,6 @@ class _TranslatePageState extends State<TranslatePage> {
 
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
           title: Text("Translate"),
         ),
         body: SafeArea(
@@ -259,7 +254,6 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   void _saveTranslationInDB() async {
-
     var databaseHelper = DatabaseHelper();
 
     //TODO: Uncomment this once everything is ready

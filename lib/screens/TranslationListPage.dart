@@ -4,6 +4,8 @@ import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'TranslatePage.dart';
+
 class TranslationListPage extends StatefulWidget {
   @override
   _TranslationListState createState() {
@@ -12,7 +14,7 @@ class TranslationListPage extends StatefulWidget {
 }
 
 class _TranslationListState extends State<TranslationListPage> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<Translation> _translations = [];
 
   @override
@@ -25,24 +27,37 @@ class _TranslationListState extends State<TranslationListPage> {
             child: FutureBuilder(
                 future: _fetchTranslations(),
                 builder: (context, snapshot) {
-                  _translations = snapshot.data;
-                  return _translations == null
-                      ? Center(child: CircularProgressIndicator())
-                      : _translations.isNotEmpty
-                          ? AnimatedList(
-                              key: _listKey,
-                              initialItemCount: _translations.length,
-                              itemBuilder: (context, index, animation) {
-                                return _buildListTile(
-                                    _translations[index], animation);
-                              })
-                          : Center(
-                              child: Text(
-                                  "You don't have any saved translations."
-                                  "Use the Translate tab to save some",
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 2));
-                })));
+                  if (snapshot.data == null ||
+                      snapshot.connectionState != ConnectionState.done) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    _translations = snapshot.data;
+                    if (_translations.isNotEmpty) {
+                      return AnimatedList(
+                          key: _listKey,
+                          initialItemCount: _translations.length,
+                          itemBuilder: (context, index, animation) {
+                            return _buildListTile(
+                                _translations[index], animation);
+                          });
+                    } else {
+                      return Center(
+                          child: Text(
+                              "You don't have any saved translations."
+                              "Use the Translate tab to save some",
+                              textAlign: TextAlign.center,
+                              textScaleFactor: 2));
+                    }
+                  }
+                })),
+        floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () => _goToTranslatePage(context)));
+  }
+
+  void _goToTranslatePage(BuildContext context) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (BuildContext context) => TranslatePage()));
   }
 
   ///Build an item with animation that will be given by the AnimatedList
@@ -68,11 +83,8 @@ class _TranslationListState extends State<TranslationListPage> {
     };
 
     _listKey.currentState.removeItem(indexToDelete, builder);
-
-    var database = await openDatabase(
-        join(await getDatabasesPath(), "my_translation_database.db"));
-    database
-        .delete("translation", where: "id = ?", whereArgs: [itemToDelete.id]);
+    var databaseHelper = DatabaseHelper();
+    databaseHelper.deleteTranslation(itemToDelete);
   }
 
   ///Open or create a Database and fetch the exising translations

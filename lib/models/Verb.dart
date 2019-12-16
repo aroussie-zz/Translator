@@ -112,6 +112,24 @@ class Verb{
     translated_sixthPerson = "Ils/Elles prennent";
   }
 
+  Verb.GO() {
+    original_title = "GO";
+    original_firstPerson = "I go";
+    original_secondPerson = "You go";
+    original_thirdPerson = "He/She goes";
+    original_fourthPerson = "We go";
+    original_fifthPerson = "You go";
+    original_sixthPerson = "They go";
+
+    translated_title = "ALLER";
+    translated_firstPerson = "Je vais";
+    translated_secondPerson = "Tu vas";
+    translated_thirdPerson = "Il/Elle/On va";
+    translated_fourthPerson = "Nous allons";
+    translated_fifthPerson = "Vous allez";
+    translated_sixthPerson = "Ils/Elles vont";
+  }
+
   Verb.fromDatabase({Map<String, dynamic> json}) {
     this.id = json['id'];
     this.original_title = json['originalTitle'];

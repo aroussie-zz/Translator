@@ -95,6 +95,7 @@ class DatabaseHelper {
       saveVerb(Verb.CAN());
       saveVerb(Verb.WANT());
       saveVerb(Verb.TAKE());
+      saveVerb(Verb.GO());
       return fetchVerbs();
     }
 
@@ -153,9 +154,12 @@ class DatabaseHelper {
     var result = await db.query(quizTable);
 
     if (result.isEmpty) {
-      var fileString = await rootBundle.loadString('assets/basic_verbs_quiz.json');
-      var quizJson = json.decode(fileString);
+      var file1String = await rootBundle.loadString('assets/basic_verbs_quiz.json');
+      var file2String = await rootBundle.loadString('assets/house_sentences.json');
+      var quizJson = json.decode(file1String);
+      var houseQuizJson = json.decode(file2String);
       saveQuiz(Quiz.fromJson(quizJson));
+      saveQuiz(Quiz.fromJson(houseQuizJson));
       return fetchQuizzes();
     }
 

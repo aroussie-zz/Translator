@@ -23,7 +23,5 @@ I write Translator using Flutter from Google so the app can work on both Android
 
 ## Translate sentences
 
-![translator_demo1](https://user-images.githubusercontent.com/16949791/73758985-e8535880-4730-11ea-8969-c5eebf791241.gif)
-
 
     

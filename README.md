@@ -21,7 +21,11 @@ I write Translator using Flutter from Google so the app can work on both Android
 
 # Demo 
 
-## Translate sentences
-
-
+Translate sentences | Manage Verbs 
+------------------- | -----------------------
+![translator_demo1](https://user-images.githubusercontent.com/16949791/73762019-379b8800-4735-11ea-84d1-8f30742cd3ec.gif) | ![translator_demo2](https://user-images.githubusercontent.com/16949791/73762045-42561d00-4735-11ea-9e77-4b69edfcdcd9.gif)
     
+
+Create a Quiz | Run a Quiz
+-------------- | -----------------
+![translator_demo3](https://user-images.githubusercontent.com/16949791/73762173-6f0a3480-4735-11ea-9c49-3af4d55c6e4b.gif) | ![translator-demo4](https://user-images.githubusercontent.com/16949791/73762180-716c8e80-4735-11ea-9985-1b6e04c290c7.gif)

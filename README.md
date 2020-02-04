@@ -29,3 +29,15 @@ Translate sentences | Manage Verbs
 Create a Quiz | Run a Quiz
 -------------- | -----------------
 ![translator_demo3](https://user-images.githubusercontent.com/16949791/73762173-6f0a3480-4735-11ea-9c49-3af4d55c6e4b.gif) | ![translator-demo4](https://user-images.githubusercontent.com/16949791/73762180-716c8e80-4735-11ea-9985-1b6e04c290c7.gif)
+
+# LICENSE
+
+MIT License
+
+Copyright (c) 2020 Alexandre Roussiere
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

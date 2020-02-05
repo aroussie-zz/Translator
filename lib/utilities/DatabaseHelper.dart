@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/models/Verb.dart';
@@ -89,7 +90,7 @@ class DatabaseHelper {
     Database db = await this.database;
     var results = await db.query(this.verbTable);
 
-    if (results.isEmpty) {
+    if (results.isEmpty && kDebugMode) {
       saveVerb(Verb.BE());
       saveVerb(Verb.HAVE());
       saveVerb(Verb.CAN());
@@ -153,7 +154,7 @@ class DatabaseHelper {
     Database db = await this.database;
     var result = await db.query(quizTable);
 
-    if (result.isEmpty) {
+    if (result.isEmpty && kDebugMode) {
       var file1String = await rootBundle.loadString('assets/basic_verbs_quiz.json');
       var file2String = await rootBundle.loadString('assets/house_sentences.json');
       var quizJson = json.decode(file1String);

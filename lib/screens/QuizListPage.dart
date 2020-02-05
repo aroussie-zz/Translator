@@ -29,9 +29,10 @@ class _QuizListState extends State<QuizListPage> {
                 _quizzes = snapshot.data;
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: _quizzes == null
+                  child: (_quizzes == null && snapshot.connectionState != ConnectionState.done)
                       ? Center(child: CircularProgressIndicator())
-                      : _quizzes.isNotEmpty
+                      //TODO: Seperate the quizzes == null scenario and display an Snackbar error instead
+                      : (_quizzes != null && _quizzes.isNotEmpty)
                           ? StaggeredGridView.countBuilder(
                               crossAxisCount: 2,
                               mainAxisSpacing: 8.0,
@@ -64,6 +65,7 @@ class _QuizListState extends State<QuizListPage> {
                 Center(
                     child: Text(
                   "${quiz.title}",
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
                 )),
                 Center(

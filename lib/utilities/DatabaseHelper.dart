@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/models/Translation.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 //See https://medium.com/@abeythilakeudara3/to-do-list-in-flutter-with-sqlite-as-local-database-8b26ba2b060e
 class DatabaseHelper {
@@ -85,6 +89,17 @@ class DatabaseHelper {
   Future<List<Verb>> fetchVerbs() async {
     Database db = await this.database;
     var results = await db.query(this.verbTable);
+
+    if (results.isEmpty && kDebugMode) {
+      saveVerb(Verb.BE());
+      saveVerb(Verb.HAVE());
+      saveVerb(Verb.CAN());
+      saveVerb(Verb.WANT());
+      saveVerb(Verb.TAKE());
+      saveVerb(Verb.GO());
+      return fetchVerbs();
+    }
+
     return List.generate(results.length, (index) {
       return Verb.fromDatabase(json: results[index]);
     });
@@ -138,8 +153,19 @@ class DatabaseHelper {
   Future<List<Quiz>> fetchQuizzes() async {
     Database db = await this.database;
     var result = await db.query(quizTable);
+
+    if (result.isEmpty && kDebugMode) {
+      var file1String = await rootBundle.loadString('assets/basic_verbs_quiz.json');
+      var file2String = await rootBundle.loadString('assets/house_sentences.json');
+      var quizJson = json.decode(file1String);
+      var houseQuizJson = json.decode(file2String);
+      saveQuiz(Quiz.fromJson(quizJson));
+      saveQuiz(Quiz.fromJson(houseQuizJson));
+      return fetchQuizzes();
+    }
+
     return List.generate(result.length, (index) {
-      return Quiz.fromJson(result[index]);
+      return Quiz.fromDatabase(result[index]);
     });
   }
 }

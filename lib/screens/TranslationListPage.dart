@@ -43,8 +43,7 @@ class _TranslationListState extends State<TranslationListPage> {
                     } else {
                       return Center(
                           child: Text(
-                              "You don't have any saved translations."
-                              "Use the Translate tab to save some",
+                              "You don't have any saved translations",
                               textAlign: TextAlign.center,
                               textScaleFactor: 2));
                     }

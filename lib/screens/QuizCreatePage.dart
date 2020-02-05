@@ -30,12 +30,14 @@ class QuizCreatePage extends StatefulWidget {
 class _QuizCreatePageState extends State<QuizCreatePage> {
   QuizQuestionProvider get provider => widget.model;
   TextEditingController _questionController;
+  TextEditingController _saveQuizTitleController;
 
   List<GlobalKey<QuizAnswerTileState>> _answersList = [];
 
   @override
   void initState() {
     super.initState();
+    _saveQuizTitleController = TextEditingController();
     _questionController =
         TextEditingController(text: provider.getQuizQuestion.question);
     _answersList = [GlobalKey(), GlobalKey(), GlobalKey(), GlobalKey()];
@@ -129,7 +131,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
               icon: Icon(Icons.save),
               label: Text("Save Quiz"),
               color: Colors.blue,
-              onPressed: () => provider.saveQuiz(),
+              onPressed: () => _showSaveQuizDialog(context),
             ),
             RaisedButton.icon(
               icon: Icon(Icons.save),
@@ -139,6 +141,38 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
             ),
           ],
         ));
+  }
+
+  Future<bool> _showSaveQuizDialog(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) =>
+            AlertDialog(
+              title: Text("How do you want to name your quiz?"),
+              content: TextField(
+                controller: _saveQuizTitleController,
+                style: TextStyle(fontSize: 18),
+                decoration: InputDecoration(
+                    hintText: "Enter a title",
+                    border: OutlineInputBorder()
+                ),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Cancel"),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                FlatButton(
+                    child: Text("Save"),
+                    onPressed: () {
+                      provider.saveQuiz(
+                          _saveQuizTitleController.text);
+                      Navigator.of(context).pop();
+                    }
+                )
+              ],
+            ));
   }
 
   void _addAQuestion() {
@@ -157,6 +191,7 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
   void dispose() {
     super.dispose();
     _questionController.dispose();
+    _saveQuizTitleController.dispose();
   }
 }
 

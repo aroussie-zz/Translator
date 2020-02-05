@@ -96,10 +96,10 @@ class QuizQuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveQuiz(){
+  void saveQuiz(String quizTitle){
     var databaseHelper = DatabaseHelper();
     databaseHelper.saveQuiz(new Quiz(
-      title: "Quiz1",
+      title: quizTitle,
       questions: this._questions
     ));
   }

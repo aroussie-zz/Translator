@@ -65,6 +65,7 @@ class _QuizListState extends State<QuizListPage> {
                 Center(
                     child: Text(
                   "${quiz.title}",
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
                 )),
                 Center(

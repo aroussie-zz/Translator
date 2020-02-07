@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:myTranslator/models/Translation.dart';
+import 'package:myTranslator/utilities/Constants.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -55,8 +57,7 @@ class _TranslationListState extends State<TranslationListPage> {
   }
 
   void _goToTranslatePage(BuildContext context) {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (BuildContext context) => TranslatePage()));
+    Navigator.of(context).pushNamed(translateRoute);
   }
 
   ///Build an item with animation that will be given by the AnimatedList

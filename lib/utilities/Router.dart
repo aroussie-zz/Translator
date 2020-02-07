@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/screens/NotesListPage.dart';
+import 'package:myTranslator/screens/PickLanguagePage.dart';
 import 'package:myTranslator/screens/QuizCreatePage.dart';
 import 'package:myTranslator/screens/QuizListPage.dart';
 import 'package:myTranslator/screens/QuizPage.dart';
@@ -11,8 +12,7 @@ import 'package:myTranslator/screens/VerbPage.dart';
 import 'package:myTranslator/utilities/Constants.dart';
 
 class Router {
-
-    static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case homeRoute:
         // "/" is only hit at initialization by the HomePage Navigator
@@ -22,6 +22,12 @@ class Router {
         return MaterialPageRoute(builder: (_) => TranslationListPage());
       case translateRoute:
         return MaterialPageRoute(builder: (_) => TranslatePage());
+      case pickLanguageRoute:
+        var arguments = settings.arguments as PickLanguageArguments;
+        return MaterialPageRoute(
+            builder: (_) => PickLanguagePage(
+                languages: arguments.languages,
+                selectOriginalLanguage: arguments.selectOriginalLanguage));
       case verbsRoute:
         return MaterialPageRoute(builder: (_) => NotesListPage());
       case addVerbRoute:

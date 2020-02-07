@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/screens/QuizCreatePage.dart';
+import 'package:myTranslator/utilities/Constants.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 import 'QuizPage.dart';
@@ -78,13 +79,11 @@ class _QuizListState extends State<QuizListPage> {
   }
 
   void _onAddQuizClicked(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => QuizCreatePageBuilder()));
+    Navigator.of(context).pushNamed(createQuizRoute);
   }
 
   void _startQuiz(Quiz quiz) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => QuizPageBuilder(quiz: quiz)));
+    Navigator.pushNamed(context, quizRoute, arguments: quiz);
   }
 
   Future<List<Quiz>> _fetchQuizzed() {

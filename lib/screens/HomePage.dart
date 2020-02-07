@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
+import 'package:myTranslator/utilities/Constants.dart';
+import 'package:myTranslator/utilities/Router.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
 
 import 'NotesListPage.dart';
@@ -104,11 +106,14 @@ class _HomeState extends State<HomePage>{
                 onWillPop: () => _onWillPop(),
                 child: Navigator(
                     key: navigatorKeys["page$_currentIndex"],
-                    initialRoute: '/',
-                    onGenerateRoute: (RouteSettings settings) =>
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                allTabDestinations[_currentIndex].screen)))));
+                    initialRoute: translationsRoute,
+                    onGenerateRoute: Router.generateRoute ))));
+
+
+//                        (RouteSettings settings) =>
+//                        MaterialPageRoute(
+//                            builder: (BuildContext context) =>
+//                                allTabDestinations[_currentIndex].screen)))));
   }
 
   ///This can be used if needed to keep state of each screen.

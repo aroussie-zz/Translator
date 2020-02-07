@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/screens/TranslatePage.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
+import 'package:myTranslator/utilities/Constants.dart';
+import 'package:myTranslator/utilities/Router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,13 +61,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [ChangeNotifierProvider.value(value: preferencesModel)],
         child: MaterialApp(
+          home: HomePage(),
           title: 'Flutter Demo',
-          initialRoute: '/',
-          routes: {
-            '/': (context) => HomePage(),
-            '/home': (context) => TranslationListPage(),
-            '/translate': (context) => TranslatePage()
-          },
+          onGenerateRoute: Router.generateRoute,
           theme: ThemeData(
             // This is the theme of your application.
             //

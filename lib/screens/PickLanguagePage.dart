@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/models/Language.dart';
 
+class PickLanguageArguments {
+  List<Language> languages;
+  bool selectOriginalLanguage;
+
+  PickLanguageArguments(this.languages, this.selectOriginalLanguage);
+
+}
+
 class PickLanguagePage extends StatefulWidget {
   final List<Language> languages;
   final bool selectOriginalLanguage;

@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Language.dart';
 import 'package:myTranslator/models/PreferencesModel.dart';
 import 'package:myTranslator/models/Translation.dart';
+import 'package:myTranslator/utilities/Constants.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 import 'package:provider/provider.dart';
 import 'package:translator/translator.dart';
@@ -212,13 +213,7 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   _sendToSelectLanguage(BuildContext context, bool isOriginalLanguage) async {
-    Language selectedLanguage = await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PickLanguagePage(
-                  languages: _languages,
-                  selectOriginalLanguage: isOriginalLanguage,
-                )));
+    Language selectedLanguage = await Navigator.pushNamed(context, pickLanguageRoute);
 
     if (selectedLanguage == null) return;
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myTranslator/models/Verb.dart';
+import 'package:myTranslator/utilities/Constants.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
 import 'VerbPage.dart';
@@ -145,8 +147,7 @@ class _NotesListState extends State<NotesListPage> {
   }
 
   void _onAddButtonClicked(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => VerbPage(_verbPageKey)));
+    Navigator.pushNamed(context, addVerbRoute, arguments: VerbPageArguments(_verbPageKey));
   }
 
   void _onDeleteClicked(BuildContext context, Verb verb) async {
@@ -170,8 +171,8 @@ class _NotesListState extends State<NotesListPage> {
   }
 
   void _onEditIconClicked(BuildContext context, Verb verb) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (BuildContext context) => VerbPage(_verbPageKey, verb)));
+    Navigator.pushNamed(context, addVerbRoute,
+        arguments: VerbPageArguments(_verbPageKey, verb));
   }
 
   void _showDialog(BuildContext mainContext, Verb verb) {

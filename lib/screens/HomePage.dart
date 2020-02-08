@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myTranslator/screens/TranslationListPage.dart';
+import 'package:myTranslator/utilities/Constants.dart';
+import 'package:myTranslator/utilities/Router.dart';
 import 'package:myTranslator/utilities/TabDestination.dart';
 
 import 'NotesListPage.dart';
@@ -13,8 +15,7 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomeState extends State<HomePage>{
-
+class _HomeState extends State<HomePage> {
   int _currentIndex;
   int _indexToPopOut = 0;
 
@@ -22,7 +23,6 @@ class _HomeState extends State<HomePage>{
     "page0": GlobalKey<NavigatorState>(),
     "page1": GlobalKey<NavigatorState>(),
     "page2": GlobalKey<NavigatorState>(),
-    "page3": GlobalKey<NavigatorState>(),
   };
 
   List<TabDestination> allTabDestinations = <TabDestination>[
@@ -31,19 +31,19 @@ class _HomeState extends State<HomePage>{
         title: 'Home',
         icon: Icons.home,
         color: Colors.blue,
-        screen: TranslationListPage()),
+        initialRoute: translationsRoute),
     TabDestination(
-        position: 2,
+        position: 1,
         title: 'Verbs',
         icon: Icons.receipt,
         color: Colors.blue,
-        screen: NotesListPage()),
+        initialRoute: verbsRoute),
     TabDestination(
-        position: 3,
+        position: 2,
         title: 'Quizzes',
         icon: Icons.school,
         color: Colors.blue,
-        screen: QuizListPage())
+        initialRoute: myQuizzesRoute)
   ];
 
   @override
@@ -55,7 +55,7 @@ class _HomeState extends State<HomePage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildBody(context),
+      body: _buildBodyWithStateKept(context),
       bottomNavigationBar: BottomNavigationBar(
         items: allTabDestinations.map((TabDestination destination) {
           return BottomNavigationBarItem(
@@ -96,20 +96,20 @@ class _HomeState extends State<HomePage>{
     }
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            top: false,
-            child: WillPopScope(
-                onWillPop: () => _onWillPop(),
-                child: Navigator(
-                    key: navigatorKeys["page$_currentIndex"],
-                    initialRoute: '/',
-                    onGenerateRoute: (RouteSettings settings) =>
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                allTabDestinations[_currentIndex].screen)))));
-  }
+//  Widget _buildBody(BuildContext context) {
+//    return Scaffold(
+//        body: SafeArea(
+//            top: false,
+//            child: WillPopScope(
+//                onWillPop: () => _onWillPop(),
+//                child: Navigator(
+//                    key: navigatorKeys["page$_currentIndex"],
+//                    initialRoute: "/",
+//                    onGenerateRoute: (RouteSettings settings) =>
+//                        MaterialPageRoute(
+//                            builder: (BuildContext context) =>
+//                            allTabDestinations[_currentIndex].screen)))));
+//  }
 
   ///This can be used if needed to keep state of each screen.
   ///CAREFUL: This won't refresh each screen when tapped...
@@ -122,11 +122,14 @@ class _HomeState extends State<HomePage>{
           children:
               allTabDestinations.map<Widget>((TabDestination destination) {
             //Return a Navigator so we can internal navigation within the tab
-            return Navigator(
-                key: navigatorKeys["page${destination.position}"],
-                initialRoute: '/',
-                onGenerateRoute: (RouteSettings settings) => MaterialPageRoute(
-                    builder: (BuildContext context) => destination.screen));
+            return SafeArea(
+                top: false,
+                child: WillPopScope(
+                    onWillPop: () => _onWillPop(),
+                    child: Navigator(
+                        key: navigatorKeys["page${destination.position}"],
+                        initialRoute: destination.initialRoute,
+                        onGenerateRoute: Router.generateRoute)));
           }).toList());
     }
   }

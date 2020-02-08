@@ -3,6 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Verb.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
 
+class VerbPageArguments {
+  Key key;
+  final Verb originalVerb;
+
+  VerbPageArguments(this.key, [this.originalVerb]);
+}
+
 class VerbPage extends StatefulWidget {
   final Verb originalVerb;
 

@@ -96,22 +96,20 @@ class _HomeState extends State<HomePage> {
     }
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            top: false,
-            child: WillPopScope(
-                onWillPop: () => _onWillPop(),
-                child: Navigator(
-                    key: navigatorKeys["page$_currentIndex"],
-                    initialRoute: translationsRoute,
-                    onGenerateRoute: Router.generateRoute))));
-
-//                        (RouteSettings settings) =>
+//  Widget _buildBody(BuildContext context) {
+//    return Scaffold(
+//        body: SafeArea(
+//            top: false,
+//            child: WillPopScope(
+//                onWillPop: () => _onWillPop(),
+//                child: Navigator(
+//                    key: navigatorKeys["page$_currentIndex"],
+//                    initialRoute: "/",
+//                    onGenerateRoute: (RouteSettings settings) =>
 //                        MaterialPageRoute(
 //                            builder: (BuildContext context) =>
-//                                allTabDestinations[_currentIndex].screen)))));
-  }
+//                            allTabDestinations[_currentIndex].screen)))));
+//  }
 
   ///This can be used if needed to keep state of each screen.
   ///CAREFUL: This won't refresh each screen when tapped...

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/providers/QuizQuestionProvider.dart';
+import 'package:myTranslator/utilities/Constants.dart';
 import 'package:provider/provider.dart';
 
 class QuizCreatePageBuilder extends StatelessWidget {
@@ -168,7 +169,9 @@ class _QuizCreatePageState extends State<QuizCreatePage> {
                     onPressed: () {
                       provider.saveQuiz(
                           _saveQuizTitleController.text);
-                      Navigator.of(context).pop();
+                      //Push back to MyQuizzes and clear the stack
+                      Navigator.of(context).pushNamedAndRemoveUntil
+                        (myQuizzesRoute, (Route<dynamic> route) => false);
                     }
                 )
               ],

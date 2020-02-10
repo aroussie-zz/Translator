@@ -1,14 +1,18 @@
 import 'dart:convert';
 
+import 'dart:math';
+
 class Quiz {
+  int id;
   String title;
   List<QuizQuestion> questions = [];
 
-  Quiz({this.title, this.questions});
+  Quiz({this.id, this.title, this.questions});
 
   Quiz.initiate({this.title});
 
   Quiz.dummy() {
+    id = Random.secure().nextInt(20);
     title = "Dummy Quiz";
     for (int i = 0; i < 5; i++) {
       questions.add(QuizQuestion(question: "Question $i", answers: [
@@ -33,6 +37,7 @@ class Quiz {
     //We need to decode the String first to get the hashMap from it
     var questionsList = json.decode(map['questions']);
     return Quiz(
+        id: map['id'],
         title: map['title'],
         questions: questionsList
             .map<QuizQuestion>((question) => QuizQuestion.fromJson(question))
@@ -43,6 +48,7 @@ class Quiz {
     //We need to decode the String first to get the hashMap from it
     var questionsList = map['questions'];
     return Quiz(
+        id: map['id'],
         title: map['title'],
         questions: questionsList
             .map<QuizQuestion>((question) => QuizQuestion.fromJson(question))

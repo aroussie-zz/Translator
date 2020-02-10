@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:myTranslator/customWidget/PlatformDialog.dart';
 import 'package:myTranslator/models/Quiz.dart';
 import 'package:myTranslator/utilities/Constants.dart';
 import 'package:myTranslator/utilities/DatabaseHelper.dart';
@@ -113,7 +114,7 @@ class _QuizListState extends State<QuizListPage> {
                     color: Colors.white,
                     child: IconButton(
                       iconSize: 34,
-                      onPressed: () => _onDeleteQuizClicked(quiz),
+                      onPressed: () => _onDeleteQuizClicked(context, quiz),
                       color: Colors.black,
                       icon: Icon(Icons.delete),
                     )))
@@ -139,9 +140,38 @@ class _QuizListState extends State<QuizListPage> {
     });
   }
 
-  Future<int> _onDeleteQuizClicked(Quiz quiz) {
+  void _onDeleteQuizClicked(BuildContext context, Quiz quiz){
+    PlatformDialog(
+      titleWidget: Text("Delete quiz"),
+      content: Text("Are you sure you want to delete ${quiz.title}?"),
+      defaultActionText: "Delete",
+      defaultAction: () => _deleteQuiz(quiz),
+      negativeActionText: "Cancel",
+      negativeAction: () => Navigator.of(context).pop(),
+    ).show(context);
+  }
+
+  void _deleteQuiz(Quiz quiz) async {
     var database = DatabaseHelper();
-    return database.deleteQuiz(quiz);
+    int success = await database.deleteQuiz(quiz);
+
+    if (success != 0) {
+      final snackbar = SnackBar(
+        content: Text("${quiz.title} has been deleted successfully",
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.green,
+      );
+      Scaffold.of(context).showSnackBar(snackbar);
+      //TODO USE A PROVIDER INSTEAD TO REFRESH THE LIST
+      setState(() {inEditMode = false;});
+    } else {
+      final snackbar = SnackBar(
+        content: Text("Something went wrong",
+            style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.red,
+      );
+      Scaffold.of(context).showSnackBar(snackbar);
+    }
   }
 
   void _onEditQuizClicked(BuildContext context) {}

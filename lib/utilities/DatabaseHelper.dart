@@ -150,6 +150,12 @@ class DatabaseHelper {
     return results;
   }
 
+  Future<int> deleteQuiz(Quiz quiz) async {
+    Database db = await this.database;
+    var results = db.delete(quizTable, where: 'id = ?', whereArgs: [quiz.id]);
+    return results;
+  }
+
   Future<List<Quiz>> fetchQuizzes() async {
     Database db = await this.database;
     var result = await db.query(quizTable);

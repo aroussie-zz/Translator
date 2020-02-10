@@ -64,7 +64,7 @@ class _QuizListState extends State<QuizListPage> {
                 child: Stack(
                   children: <Widget>[
                     _buildQuizDisplay(context, quiz),
-                    inEditMode ? _buildActionsDisplay(context) : Container()
+                    inEditMode ? _buildActionsDisplay(context, quiz) : Container()
                   ],
                 ))));
   }
@@ -89,7 +89,7 @@ class _QuizListState extends State<QuizListPage> {
     );
   }
 
-  Widget _buildActionsDisplay(BuildContext context) {
+  Widget _buildActionsDisplay(BuildContext context, Quiz quiz) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -102,6 +102,7 @@ class _QuizListState extends State<QuizListPage> {
                 child: Container(
                     color: Colors.white,
                     child: IconButton(
+                      iconSize: 34,
                       onPressed: () => _onEditQuizClicked(context),
                       color: Colors.black,
                       icon: Icon(Icons.edit),
@@ -111,7 +112,8 @@ class _QuizListState extends State<QuizListPage> {
                 child: Container(
                     color: Colors.white,
                     child: IconButton(
-                      onPressed: () => _onDeleteQuizClicked(context),
+                      iconSize: 34,
+                      onPressed: () => _onDeleteQuizClicked(quiz),
                       color: Colors.black,
                       icon: Icon(Icons.delete),
                     )))
@@ -122,6 +124,7 @@ class _QuizListState extends State<QuizListPage> {
             child: Container(
                 color: Colors.white,
                 child: IconButton(
+                  iconSize: 34,
                   onPressed: () => _onCancelClicked(context),
                   color: Colors.red,
                   icon: Icon(Icons.cancel),
@@ -136,7 +139,10 @@ class _QuizListState extends State<QuizListPage> {
     });
   }
 
-  void _onDeleteQuizClicked(BuildContext context) {}
+  Future<int> _onDeleteQuizClicked(Quiz quiz) {
+    var database = DatabaseHelper();
+    return database.deleteQuiz(quiz);
+  }
 
   void _onEditQuizClicked(BuildContext context) {}
 

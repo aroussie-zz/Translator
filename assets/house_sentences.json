@@ -1,5 +1,6 @@
 {
   "title": "House sentences",
+  "id": 1,
   "questions": [
     {"question":"Un mouchoir","answers":[{"answer":"A glass","isRightAnswer":false},{"answer":"A tissue","isRightAnswer":true},{"answer":"A chair","isRightAnswer":false},{"answer":"A towel","isRightAnswer":false}]},
     {"question":"A glass","answers":[{"answer":"une serviette","isRightAnswer":false},{"answer":"Une tasse","isRightAnswer":false},{"answer":"Un couteau","isRightAnswer":false},{"answer":"Un verre","isRightAnswer":true}]},

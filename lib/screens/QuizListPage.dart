@@ -162,6 +162,7 @@ class _QuizListState extends State<QuizListPage> {
         content: Text("${quiz.title} has been deleted successfully",
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
+          duration: Duration(seconds: 2)
       );
       _key.currentState.showSnackBar(snackbar);
       //TODO USE A PROVIDER INSTEAD TO REFRESH THE LIST

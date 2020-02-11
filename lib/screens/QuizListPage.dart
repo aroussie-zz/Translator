@@ -14,13 +14,14 @@ class QuizListPage extends StatefulWidget {
 }
 
 class _QuizListState extends State<QuizListPage> {
-  final GlobalKey _key = GlobalKey();
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   List<Quiz> _quizzes;
   bool inEditMode = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: AppBar(title: Text("My Quizzes")),
       body: SafeArea(
           child: FutureBuilder(
@@ -147,13 +148,14 @@ class _QuizListState extends State<QuizListPage> {
       defaultActionText: "Delete",
       defaultAction: () => _deleteQuiz(quiz),
       negativeActionText: "Cancel",
-      negativeAction: () => Navigator.of(context).pop(),
+      negativeAction: () => Navigator.of(context, rootNavigator: true).pop(),
     ).show(context);
   }
 
   void _deleteQuiz(Quiz quiz) async {
     var database = DatabaseHelper();
     int success = await database.deleteQuiz(quiz);
+    Navigator.of(context, rootNavigator: true).pop();
 
     if (success != 0) {
       final snackbar = SnackBar(
@@ -161,7 +163,7 @@ class _QuizListState extends State<QuizListPage> {
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
       );
-      Scaffold.of(context).showSnackBar(snackbar);
+      _key.currentState.showSnackBar(snackbar);
       //TODO USE A PROVIDER INSTEAD TO REFRESH THE LIST
       setState(() {inEditMode = false;});
     } else {
@@ -170,7 +172,7 @@ class _QuizListState extends State<QuizListPage> {
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
       );
-      Scaffold.of(context).showSnackBar(snackbar);
+      _key.currentState.showSnackBar(snackbar);
     }
   }
 

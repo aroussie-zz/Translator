@@ -157,7 +157,8 @@ class _NotesListState extends State<NotesListPage> {
     if (result != 0) {
       final snackBar = SnackBar(
           content: Text("Verb deleted", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.green);
+          backgroundColor: Colors.green,
+      duration: Duration(seconds: 2));
       Scaffold.of(context).showSnackBar(snackBar);
       //TODO: Look to use Provider to do that instead of refreshing the entire screen?
       setState(() {});
